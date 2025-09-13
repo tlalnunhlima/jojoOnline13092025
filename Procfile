@@ -1,1 +1,11 @@
-web: node index.js
+          {
+          "name": "jojoOnline27082025",
+          "version": "1.0.0",
+          "main": "index.js",
+          "scripts": {
+            "start": "node index.js"
+          },
+          "dependencies": {
+            "express": "^4.17.1"
+          }
+        }
