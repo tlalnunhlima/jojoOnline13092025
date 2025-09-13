@@ -29,11 +29,11 @@ app.use(express.urlencoded({extended: true}))
 
 //mongoose warning tibotu
 
-mongoose.set('useNewUrlParser', true);
+//mongoose.set('useNewUrlParser', true);
 
-mongoose.set('useFindAndModify', false);
+//mongoose.set('useFindAndModify', false);
 
-mongoose.set('useCreateIndex', true);
+// mongoose.set('useCreateIndex', true);
 
 
 //all the link goes to routeController
