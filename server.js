@@ -15,7 +15,7 @@ const app = express();
 
 app.set('view engine', 'ejs');
 
-app.set('port', (process.env.PORT || 80));
+app.set('port', (process.env.PORT || 3000));
 
 
 // public express static
@@ -27,13 +27,29 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
 
-//mongoose warning tibotu
 
-//mongoose.set('useNewUrlParser', true);
+// app.js / server.js
+const session = require('express-session');
+const flash = require('connect-flash');
 
-//mongoose.set('useFindAndModify', false);
 
-// mongoose.set('useCreateIndex', true);
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'supersecret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 1000 * 60 * 60 } // 1h
+}));
+
+app.use(flash());
+
+// Make flash messages available in all EJS views
+app.use((req, res, next) => {
+  res.locals.success = req.flash('success');
+  res.locals.error   = req.flash('error');
+  res.locals.info    = req.flash('info');
+  res.locals.warning = req.flash('warning');
+  next();
+});
 
 
 //all the link goes to routeController

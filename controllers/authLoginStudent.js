@@ -1,60 +1,44 @@
-const Student = require('../models/Student')
+const Student = require('../models/Student');
 
-
-
-//student login authorization
-
-module.exports = (req, res) => {
-    
+module.exports = async (req, res) => {
+  try {
     const { phone, dob } = req.body;
-    
-    Student.find({phone: phone, dob: dob})
-    
-    .then((Std) => {
-                    
-                    console.log('meow : student found');
-                    
-                    //console.log(Std);
-                    
-                    req.session.userId = Std[0]._id,
-                    
-                    req.session.username = Std[0].username,
-                    
-                    req.session.studentIdentity = Std[0].studentIdentity,
-                   
-                    req.session.myDashboard1 = Std[0].myDashboard[0],
-                    
-                    req.session.myDashboard2 = Std[0].myDashboard[1],
-                    
-                    req.session.myDashboard3 = Std[0].myDashboard[2],
-                    
-                    req.session.hrefLink1 = Std[0].hrefLink[0],
-                    
-                    req.session.hrefLink2 = Std[0].hrefLink[1],
-                    
-                    req.session.assignmentArray = Std[0].assignmentTheory,
-                    
-                    req.session.studentFee = Std[0].studentFee,
-                    req.session.studentExamFee = Std[0].studentExamFee,
-                    req.session.studentOtherFee = Std[0].studentOtherFee,
-                    
-                    res.redirect('/all/stdDashboard')
 
-                    })
-                    
-    .catch(() => { 
-                
-    
-        return res.render('studentLogin', {
-                
-                errors: 'Username or password incorrect!',
-        
-                students: req.body
-                    
-                    
-                    });
-                
- 
-                })
-                
-}
+    // Use findOne for a single student
+    const student = await Student.findOne({ phone, dob });
+
+    if (!student) {
+      return res.render('studentLogin', {
+        errors: 'Phone number or date of birth is incorrect!',
+        students: req.body
+      });
+    }
+
+    console.log('✅ Student found:', student.username);
+
+    // Save to session
+    req.session.userId = student._id;
+    req.session.username = student.username;
+    req.session.studentIdentity = student.studentIdentity;
+
+    req.session.myDashboard1 = student.myDashboard?.[0];
+    req.session.myDashboard2 = student.myDashboard?.[1];
+    req.session.myDashboard3 = student.myDashboard?.[2];
+
+    req.session.hrefLink1 = student.hrefLink?.[0];
+    req.session.hrefLink2 = student.hrefLink?.[1];
+
+    req.session.assignmentArray = student.assignmentTheory;
+    req.session.studentFee = student.studentFee;
+    req.session.studentExamFee = student.studentExamFee;
+    req.session.studentOtherFee = student.studentOtherFee;
+
+    return res.redirect('/all/stdDashboard');
+  } catch (err) {
+    console.error('❌ Error in student login:', err);
+    return res.render('studentLogin', {
+      errors: 'Something went wrong. Please try again.',
+      students: req.body
+    });
+  }
+};

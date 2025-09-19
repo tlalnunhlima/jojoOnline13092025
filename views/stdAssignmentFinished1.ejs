@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  
+<%- include('layouts/headers') -%>
+
+<body>
+    
+    <%- include ('ejsFunction') %> <!--function javascript ejs-->
+    
+    <!-- --------------main container section------------------ -->
+
+<div class="container">
+  
+  <main>
+
+  <div class="row">
+          
+           <div class="mx-auto px-4 mt-3">
+            
+            <div class="d-flex justify-content-between">
+            
+            <a href="#" onclick="window.history.back();" class="small text-secondary"> <i class="fas fa-arrow-left pe-2"></i> Back </i> </a>
+            
+            </div>
+            
+            </div>
+  </div>
+      
+
+      
+      <!--second lane-->
+     
+      <!-- --------------assignment record table------------------ -->
+    
+      <div class="table-responsive">
+        
+        <table class="table table-sm shadow-sm mt-4">
+          
+          <thead>
+            
+            <tr>
+              
+              <td colspan="6" class="fs-6 fw-bold border bg-primary text-white m-2 p-2 text-center"> 
+              
+              Assignment chhang zo tawhte </td>
+              
+            </tr>
+            
+            <tr class="border bg-white orangeColor">
+              
+              <th class="fw-normal  border small"> Regn</th>
+              
+              <th class="fw-normal  border small"> Name of Student</th>
+              
+              <th class="fw-normal  border small"> Address</th>
+              
+          </thead>
+          
+          <tbody class="border bg-white">
+          
+           
+            
+     
+<ul class="list-group list-group-flush" style="max-width:420px;">
+    
+  <% if (Students && Students.length) { %>
+  
+    <% Students.forEach(s => { %>
+    
+    <tr>
+        <td class="text-center fw-normal  border small">  <span><%= s.regn ? (s.regn) : 'N/A' %></span> </td>
+        <td><%= capitalizeFirstLetter(s.username) %></a></td>
+        <td class="fw-normal  border small"><span><%= s.address ? capitalizeFirstLetter(s.address) : 'N/A' %></span></td>
+    </tr>
+      
+    <% }) %>
+    
+  <% } else { %>
+  
+    <li class="list-group-item text-muted">No students found.</li>
+  <% } %>
+</ul>
+
+
+          </tbody>
+          
+        </table>
+        
+      </div>
+      
+      
+    </main>
+    
+</div>
+
+    <%- include('layouts/scripts') -%>
+    
+    <%- include('layouts/footer') -%>
+  
+
+  </body>
+  
+</html>

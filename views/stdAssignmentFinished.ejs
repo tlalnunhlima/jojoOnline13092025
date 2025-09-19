@@ -49,7 +49,7 @@
             
             <tr class="text-center border bg-white orangeColor">
               
-              <th class="fw-normal  border small"> Sl</th>
+              <th class="fw-normal  border small"> Regn</th>
               
               <th class="fw-normal  border small"> Name of Student</th>
               
@@ -61,219 +61,30 @@
           
           <tbody class="border bg-white">
           
-            <tbody>
+           
             
-      <% 
-            
-            var serialNo = 0;
-            
-            if(Students.length > 0) {
-              
-             for (var i=0; i < Students.length; i++) {
-                 
-            var chapter_Name_Subject_101 = [];
-            var chapter_Name_Subject_102 = [];
-            var chapter_Name_Subject_103 = [];
-            var chapter_Name_Subject_104 = [];
-            var chapter_Name_Subject_105 = [];
-            var chapter_Name_Subject_106 = [];
-            var subject_all_chapter = 0;
-              
-                    if( Students[i].assignmentTheory != undefined ) {
-          
-                    for (var k=0; k < Students[i].assignmentTheory.length; k++) {
-                        
-                        if( Students[i].assignmentTheory[k].chapterName != undefined) {
-                            
-                            chapter_Name_Subject_101.push(Students[i].assignmentTheory[k].chapterName);
-                       
-             } }  }
-             
-              if(chapter_Name_Subject_101.length >= 10) {
-                if(chapter_Name_Subject_101.includes('Chapter-1') 
-                && chapter_Name_Subject_101.includes('Chapter-2')   
-                && chapter_Name_Subject_101.includes('Chapter-3')
-                && chapter_Name_Subject_101.includes('Chapter-4')
-                && chapter_Name_Subject_101.includes('Chapter-5')
-                && chapter_Name_Subject_101.includes('Chapter-6')
-                && chapter_Name_Subject_101.includes('Chapter-7')
-                && chapter_Name_Subject_101.includes('Chapter-8')
-                && chapter_Name_Subject_101.includes('Chapter-9')
-                && chapter_Name_Subject_101.includes('Chapter-10')
-                ) {
-                  subject_all_chapter++;
-                }
-            }
-             
-              
-            if( Students[i].assignmentTheory102 != undefined ) {
-          
-                    for (var k=0; k < Students[i].assignmentTheory102.length; k++) {
-                        
-                        if( Students[i].assignmentTheory102[k].chapterName != undefined) {
-                            
-                            chapter_Name_Subject_102.push(Students[i].assignmentTheory102[k].chapterName);
-                       
-             } } }
-             
-            if(chapter_Name_Subject_102.length >= 10) {
-                if(chapter_Name_Subject_102.includes('Chapter-1')
-                && chapter_Name_Subject_102.includes('Chapter-2')
-                && chapter_Name_Subject_102.includes('Chapter-3')
-                && chapter_Name_Subject_102.includes('Chapter-4')
-                && chapter_Name_Subject_102.includes('Chapter-5')
-                && chapter_Name_Subject_102.includes('Chapter-6')
-                && chapter_Name_Subject_102.includes('Chapter-7')
-                && chapter_Name_Subject_102.includes('Chapter-8')
-                && chapter_Name_Subject_102.includes('Chapter-9')
-                && chapter_Name_Subject_102.includes('Chapter-10')
-                ) {
-                  subject_all_chapter++;
-                }
-            }
-             
-            if( Students[i].assignmentTheory103 != undefined ) {
-          
-                    for (var k=0; k < Students[i].assignmentTheory103.length; k++) {
-                        
-                        if( Students[i].assignmentTheory103[k].chapterName != undefined) {
-                            
-                            chapter_Name_Subject_103.push(Students[i].assignmentTheory103[k].chapterName);
-                       
-            } } }
-            
-                if(chapter_Name_Subject_103.length >= 20) {
-                if(chapter_Name_Subject_103.includes('Chapter-1')
-                && chapter_Name_Subject_103.includes('Chapter-2')
-                && chapter_Name_Subject_103.includes('Chapter-3')
-                && chapter_Name_Subject_103.includes('Chapter-4')
-                && chapter_Name_Subject_103.includes('Chapter-5')
-                && chapter_Name_Subject_103.includes('Chapter-6')
-                && chapter_Name_Subject_103.includes('Chapter-7')
-                && chapter_Name_Subject_103.includes('Chapter-8')
-                && chapter_Name_Subject_103.includes('Chapter-9')
-                && chapter_Name_Subject_103.includes('Chapter-10')
-                && chapter_Name_Subject_103.includes('Chapter-11')
-                && chapter_Name_Subject_103.includes('Chapter-12')
-                && chapter_Name_Subject_103.includes('Chapter-13')
-                && chapter_Name_Subject_103.includes('Chapter-14')
-                && chapter_Name_Subject_103.includes('Chapter-15')
-                && chapter_Name_Subject_103.includes('Chapter-16')
-                && chapter_Name_Subject_103.includes('Chapter-17')
-                && chapter_Name_Subject_103.includes('Chapter-18')
-                && chapter_Name_Subject_103.includes('Chapter-19')
-                && chapter_Name_Subject_103.includes('Chapter-20')
-                ) {
-                  subject_all_chapter++;;
-                }
-            }
-            
-                 if( Students[i].assignmentTheory104 != undefined ) {
-          
-                    for (var k=0; k < Students[i].assignmentTheory104.length; k++) {
-                        
-                        if( Students[i].assignmentTheory104[k].chapterName != undefined) {
-                            
-                            chapter_Name_Subject_104.push(Students[i].assignmentTheory104[k].chapterName);
-                       
-             } } }
-             
-            if(chapter_Name_Subject_104.length >= 6) {
-                if(chapter_Name_Subject_104.includes('Chapter-1')
-                && chapter_Name_Subject_104.includes('Chapter-2')
-                && chapter_Name_Subject_104.includes('Chapter-3')
-                && chapter_Name_Subject_104.includes('Chapter-4')
-                && chapter_Name_Subject_104.includes('Chapter-5')
-                && chapter_Name_Subject_104.includes('Chapter-6')
-                ) {
-                  subject_all_chapter++;
-                }
-            }
-             
-             if( Students[i].assignmentTheory105 != undefined ) {
-          
-                    for (var k=0; k < Students[i].assignmentTheory105.length; k++) {
-                        
-                        if( Students[i].assignmentTheory105[k].chapterName != undefined) {
-                            
-                            chapter_Name_Subject_105.push(Students[i].assignmentTheory105[k].chapterName);
-                       
-            } } }
-            
-            if(chapter_Name_Subject_105.length >= 13) {
-                if(chapter_Name_Subject_105.includes('Chapter-1')
-                && chapter_Name_Subject_105.includes('Chapter-2')
-                && chapter_Name_Subject_105.includes('Chapter-3')
-                && chapter_Name_Subject_105.includes('Chapter-4')
-                && chapter_Name_Subject_105.includes('Chapter-5')
-                && chapter_Name_Subject_105.includes('Chapter-6')
-                && chapter_Name_Subject_105.includes('Chapter-7')
-                && chapter_Name_Subject_105.includes('Chapter-8')
-                && chapter_Name_Subject_105.includes('Chapter-9')
-                && chapter_Name_Subject_105.includes('Chapter-10')
-                && chapter_Name_Subject_105.includes('Chapter-11')
-                && chapter_Name_Subject_105.includes('Chapter-12')
-                && chapter_Name_Subject_105.includes('Chapter-13')
-                ) {
-                  subject_all_chapter++;
-                }
-            }
-            
-            if( Students[i].assignmentTheory106 != undefined ) {
-          
-                    for (var k=0; k < Students[i].assignmentTheory106.length; k++) {
-                        
-                        if( Students[i].assignmentTheory106[k].chapterName != undefined) {
-                            
-                            chapter_Name_Subject_106.push(Students[i].assignmentTheory106[k].chapterName);
-                       
-                } } }
-                
-            if(chapter_Name_Subject_106.length >= 14) {
-                if(chapter_Name_Subject_106.includes('Chapter-1') 
-                && chapter_Name_Subject_106.includes('Chapter-2')
-                && chapter_Name_Subject_106.includes('Chapter-3')
-                && chapter_Name_Subject_106.includes('Chapter-4')
-                && chapter_Name_Subject_106.includes('Chapter-5')
-                && chapter_Name_Subject_106.includes('Chapter-6')
-                && chapter_Name_Subject_106.includes('Chapter-7')
-                && chapter_Name_Subject_106.includes('Chapter-8')
-                && chapter_Name_Subject_106.includes('Chapter-9')
-                && chapter_Name_Subject_106.includes('Chapter-10')
-                && chapter_Name_Subject_106.includes('Chapter-11')
-                && chapter_Name_Subject_106.includes('Chapter-12')
-                && chapter_Name_Subject_106.includes('Chapter-13')
-                && chapter_Name_Subject_106.includes('Chapter-14')
-                ) {
-                  subject_all_chapter++;
-                }
-            }  %>
-             
-            <% 
+     
+<ul class="list-group list-group-flush" style="max-width:420px;">
+    
+  <% if (Students && Students.length) { %>
+  
+    <% Students.forEach(s => { %>
+    
+    <tr>
+        <td class="text-center fw-normal  border small">  <span><%= s.regn ? (s.regn) : 'N/A' %></span> </td>
+        <td><a href="/computer/<%= s._id %>"><%= capitalizeFirstLetter(s.username) %></a></td>
+        <td class="fw-normal  border small"><span><%= s.address ? capitalizeFirstLetter(s.address) : 'N/A' %></span></td>
+        <td class="ps-3">  <a href="/assignment/checkScore/<%= s._id %>" class="text-muted"> click here... </a></td>
+    </tr>
+      
+    <% }) %>
+    
+  <% } else { %>
+  
+    <li class="list-group-item text-muted">No students found.</li>
+  <% } %>
+</ul>
 
-          if(subject_all_chapter == 6) {
-                
-            serialNo++;
-            
-            %>
-           <tr>
-                          <td class="border text-center"> <%= serialNo %> </td>
-                          
-                          <td class="border" >
-          
-                                <%= capitalizeFirstLetter(Students[i].username) %>
-                            
-                          </td>
-                          
-                          <td class="border"> <%= capitalizeFirstLetter(Students[i].address) %> </td>
-                          
-                          <td class="border ps-2">  <a href="/assignment/checkScore/<%= Students[i]._id %>" class="text-muted">
-                           click here... </a></td>
-                          
-                        </tr>
-                          
-            
-            <% } } } %>
 
           </tbody>
           

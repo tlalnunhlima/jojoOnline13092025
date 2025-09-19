@@ -4,13 +4,18 @@ const Schema = mongoose.Schema
 
 var uniqueValidator = require('mongoose-unique-validator')
 
+
+
+
 const UserSchema = new Schema({
     
         admissionYear: {
         
         type: String,
         
-        required: [true, 'Please provide year']
+        required: [true, 'Please provide year'],
+        
+        index: true   // 👈 speeds up queries on this field
         
     },
     
@@ -20,7 +25,7 @@ const UserSchema = new Schema({
         
         required: [true, 'Please provide regn no'],
         
-        unique: true
+        unique: true  // 👈 automatically indexed as unique
         
     },
     
@@ -42,7 +47,15 @@ const UserSchema = new Schema({
         
         type: String,
         
-        required: [true, 'Please provide fname']
+        required: [true, 'Please provide Father name']
+        
+    },
+    
+     mName: {
+        
+        type: String,
+        
+        required: [true, 'Please provide Mother name']
         
     },
     
@@ -56,17 +69,18 @@ const UserSchema = new Schema({
     
     phone: {
         
-        type: String,
-        
-        required: [true, 'Please provide phone']
-        
-    },
+    type: String,
+    required: [true, 'Please provide phone'],
+    match: [/^[0-9]{10}$/, 'Phone number must be 10 digits']
     
-    emailId: {
-        
-        type: String
         
     },
+
+    emailId: {
+    type: String,
+    match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email']
+    },
+
     
     aadharNo: {
         
@@ -76,7 +90,9 @@ const UserSchema = new Schema({
     
     batchSession: {
         
-        type: String
+        type: String,
+        
+        index: true   // 👈 same for batch filtering
 
     },
     
@@ -439,6 +455,15 @@ const UserSchema = new Schema({
     
 });
 
+// in Student schema
+UserSchema.index({ batchSession: 1, regn: -1 });
+
+UserSchema.index({ 'assignmentTheory.dateSubmitted': 1 });
+UserSchema.index({ 'assignmentTheory102.dateSubmitted': 1 });
+UserSchema.index({ 'assignmentTheory103.dateSubmitted': 1 });
+UserSchema.index({ 'assignmentTheory104.dateSubmitted': 1 });
+UserSchema.index({ 'assignmentTheory105.dateSubmitted': 1 });
+UserSchema.index({ 'assignmentTheory106.dateSubmitted': 1 });
 
 
 //duplicate checker

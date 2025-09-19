@@ -23,41 +23,39 @@
        <!-- --------------latest score------------------ -->
     <div class="row">
         
-        <% 
-                        var paidStudent = [];
-                        
-                        if(studentFee.length != undefined) {
-                        
-                        for(var i = 0; i < studentFee.length; i++) {
-                        
-                        if(studentFee[i].feeAmount >= 1000) {
-                            paidStudent.push('paid');
-                          }
-                        }
-                        }
-                        if(studentExamFee.length != undefined) {
-                        
-                        for(var i = 0; i < studentExamFee.length; i++) {
-                        
-                        if(studentExamFee[i].feeAmount == 1510) {
-                            paidStudent.push('paid');
-                          }
-                        }
-                        }
-                        if(studentOtherFee.length != undefined) {
-                        
-                        for(var i = 0; i < studentOtherFee.length; i++) {
-                        
-                        if(studentOtherFee[i].feeAmount >= 499) {
-                            paidStudent.push('paid');
-                          }
-                        }
-                        }
-                        if(paidStudent.includes('paid')) {
-                            
-                            %> 
-                            
-<div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
+        <%
+  // Admission year logic: current-year students need >=1670 (or exam == 1670),
+  // previous-year students need >=499 (or exam == 1670).
+
+  const nowYear = '2025';
+  const admYear = Number(thisStudent?.admissionYear);
+
+  const feeArr    = Array.isArray(studentFee) ? studentFee : [];
+  const examArr   = Array.isArray(studentExamFee) ? studentExamFee : [];
+  const otherArr  = Array.isArray(studentOtherFee) ? studentOtherFee : [];
+
+  const any = (arr, pred) => arr.some(x => pred(Number(x?.feeAmount || 0)));
+
+  const examPaidEq1670 = any(examArr, n => n === 1670);
+
+  const currentYearPaid = (admYear === nowYear) && (
+    any(feeArr, n => n >= 1670) ||
+    any(otherArr, n => n >= 1670) ||
+    examPaidEq1670
+  );
+
+  const previousYearPaid = (admYear < nowYear) && (
+    any(feeArr, n => n >= 499) ||
+    any(otherArr, n => n >= 499) ||
+    examPaidEq1670
+  );
+
+  const isPaid = Boolean(currentYearPaid || previousYearPaid);
+%>
+
+         <% if (isPaid) { %>
+  <!-- carousel here (unchanged) -->
+  <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
   <div class="carousel-indicators mt-0 pt-0">
     <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active d-none d-sm-block" aria-current="true" aria-label="Slide 1"></button>
     <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" class="d-none d-sm-block" aria-label="Slide 2"></button>
@@ -103,13 +101,11 @@
     <span class="visually-hidden">Next</span>
   </button>
 </div>
-                            
-            
- 
+
                        <% } else {%>
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
-  <strong>Hello Dear!</strong> Tuna i account hi unpaid account a ni a, i thiltih theih a limit dawn a; lesson tam tak i zir thei dawn lo a, study material i download thei lo bawk ang.
-  Account chungchang hi i hriatthiam theih nan <a href="/paid_unpaid_account" class="text-primary"> ...learn more</a> hi click ang che. 
+  <strong>Hello Dear!</strong> Pawisa engmah i la pek loh avangin lesson tam tak i zir thei dawn lo a, study material i download thei lo bawk ang.
+  Pawisa pek dan chungchang hi i hriatthiam theih nan kan thuziak hi lo chhiar ang che <a href="/paid_unpaid_account" class="text-primary"> ...read more</a> 
   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
                      <%   } %> 
@@ -135,7 +131,8 @@
                 <tr>
                     
                     <td colspan="3"><a href="dcatheorywelcomepage" class="text-muted fs-6 fw-normal">
-                        <i class="fas fa-file ps-2 text-success"></i> <span class="myLink"> Learn Theory (Theory zirna) </span></a></td>
+                        <i class="fas fa-file ps-2 text-success"></i> <span class="myLink"> Learn Theory (Theory zirna) </span>
+                        </a></td>
                     
                 </tr>
                 <tr>
@@ -187,121 +184,47 @@
           </thead>
           
           <tbody class="text-center border">
-            
-            
-            
-            <% if ( thisStudent.assignmentTheory.length > 0  ) {
-     
-          %>
-            
-           <tr>
-              
-             <td class="text-center text-muted border"><%= thisStudent.assignmentTheory[(thisStudent.assignmentTheory.length) - 1].subjectName %></td>
-              
-              <td class="text-center text-muted border"><%= thisStudent.assignmentTheory[(thisStudent.assignmentTheory.length) - 1].chapterName %></td>
-              
-              <td class="text-center text-muted border"><%= convertDate(thisStudent.assignmentTheory[(thisStudent.assignmentTheory.length) - 1].dateSubmitted) %></td>
-              
-            </tr>
-        
-            <% }  %>
-            
-            <% if ( thisStudent.assignmentTheory102.length > 0 ) {
-     
-          %>
-            
-           <tr>
-              
-              <td class="text-center text-muted border"><%= thisStudent.assignmentTheory102[(thisStudent.assignmentTheory102.length) - 1].subjectName %></td>
-              
-              <td class="text-center text-muted border"><%= thisStudent.assignmentTheory102[(thisStudent.assignmentTheory102.length) - 1].chapterName %></td>
-              
-              <td class="text-center text-muted border"><%= convertDate(thisStudent.assignmentTheory102[(thisStudent.assignmentTheory102.length) - 1].dateSubmitted) %></td>
-              
-            </tr>
-        
-            <% } %>
-            
-            
-            
-            <% if ( thisStudent.assignmentTheory103.length > 0 ) {
-     
-          %>
-            
-           <tr>
-              
-              <td class="text-center text-muted border"><%= thisStudent.assignmentTheory103[(thisStudent.assignmentTheory103.length) - 1].subjectName %></td>
-              
-              <td class="text-center text-muted border"><%= thisStudent.assignmentTheory103[(thisStudent.assignmentTheory103.length) - 1].chapterName %></td>
-              
-              <td class="text-center text-muted border"><%= convertDate(thisStudent.assignmentTheory103[(thisStudent.assignmentTheory103.length) - 1].dateSubmitted) %></td>
-              
-            </tr>
-        
-            <% }  %>
-            <% if ( thisStudent.assignmentTheory104.length > 0  ) {
-     
-          %>
-            
-           <tr>
-              
-              <td class="text-center text-muted border"><%= thisStudent.assignmentTheory104[(thisStudent.assignmentTheory104.length) - 1].subjectName %></td>
-              
-              <td class="text-center text-muted border"><%= thisStudent.assignmentTheory104[(thisStudent.assignmentTheory104.length) - 1].chapterName %></td>
-              
-              <td class="text-center text-muted border"><%= convertDate(thisStudent.assignmentTheory104[(thisStudent.assignmentTheory104.length) - 1].dateSubmitted) %></td>
-              
-            </tr>
-        
-            <% }  %>
-              <% if ( thisStudent.assignmentTheory105.length > 0  ) {
-     
-          %>
-            
-           <tr>
-              
-              <td class="text-center text-muted border"><%= thisStudent.assignmentTheory105[(thisStudent.assignmentTheory105.length) - 1].subjectName %></td>
-              
-              <td class="text-center text-muted border"><%= thisStudent.assignmentTheory105[(thisStudent.assignmentTheory105.length) - 1].chapterName %></td>
-              
-              <td class="text-center text-muted border"><%= convertDate(thisStudent.assignmentTheory105[(thisStudent.assignmentTheory105.length) - 1].dateSubmitted) %></td>
-              
-            </tr>
-        
-            <% }  %>
-                 <% if ( thisStudent.assignmentTheory106.length > 0  ) {
-     
-          %>
-            
-           <tr>
-              
-              <td class="text-center text-muted border"><%= thisStudent.assignmentTheory106[(thisStudent.assignmentTheory106.length) - 1].subjectName %></td>
-              
-              <td class="text-center text-muted border"><%= thisStudent.assignmentTheory106[(thisStudent.assignmentTheory106.length) - 1].chapterName %></td>
-              
-              <td class="text-center text-muted border"><%= convertDate(thisStudent.assignmentTheory106[(thisStudent.assignmentTheory106.length) - 1].dateSubmitted) %></td>
-              
-            </tr>
-        
-            <% }  %>
-            
-            <% if ( thisStudent.assignmentTheory.length < 1 &&
-                    thisStudent.assignmentTheory102.length < 1 &&
-                    thisStudent.assignmentTheory103.length < 1 &&
-                    thisStudent.assignmentTheory104.length < 1 &&
-                    thisStudent.assignmentTheory105.length < 1 &&
-                    thisStudent.assignmentTheory106.length < 1
-            ) {
-          %>
-          <tr>
-              
-              <td colspan="3" class="text-center border text-success"> Assignment chhan i la nei lo va, learn lesson hnuaia Learn Theory-ah hian lut la, assignment chhang ang che. </td>
-              
-            </tr>
-          
-          <% }  %>
-          
-          </tbody>
+  <%
+    const buckets = [
+      'assignmentTheory',
+      'assignmentTheory102',
+      'assignmentTheory103',
+      'assignmentTheory104',
+      'assignmentTheory105',
+      'assignmentTheory106'
+    ];
+
+    const latestRows = [];
+    buckets.forEach(key => {
+      const arr = thisStudent?.[key];
+      if (Array.isArray(arr) && arr.length > 0) {
+        const last = arr[arr.length - 1];
+        latestRows.push({
+          subjectName: last?.subjectName || '-',
+          chapterName: last?.chapterName || '-',
+          dateSubmitted: last?.dateSubmitted
+        });
+      }
+    });
+  %>
+
+  <% if (latestRows.length) { %>
+    <% latestRows.forEach(r => { %>
+      <tr>
+        <td class="text-center text-muted border"><%= r.subjectName %></td>
+        <td class="text-center text-muted border"><%= r.chapterName %></td>
+        <td class="text-center text-muted border"><%= convertDate(r.dateSubmitted) %></td>
+      </tr>
+    <% }) %>
+  <% } else { %>
+    <tr>
+      <td colspan="3" class="text-center border text-success">
+        Assignment chhan i la nei lo va, learn lesson hnuaia Learn Theory-ah hian lut la, assignment chhang ang che.
+      </td>
+    </tr>
+  <% } %>
+</tbody>
+
           
         </table>
         
@@ -340,7 +263,7 @@
       </div>
       
       
- <!--     
+   
        <div class="table-responsive mb-2 mt-4 col-lg-6 col-md-6 col-xs-12">
         
         <table class="table table-sm bg-white shadow-sm mx-auto" style="max-width:500px">
@@ -359,23 +282,18 @@
           
           <tbody class="border">
             
+
                 <tr>
                     
-                    <td colspan="3"><a href="stdTopPerformers" class="text-muted fs-6 fw-normal">
-                        <i class="far fa-list-alt ps-2 text-primary"></i> <span class="myLink"> Assignment chhangtute hming...</span></a></td>
-                    
-                </tr>
-                <tr>
-                    
-                    <td colspan="3"><a href="stdAssignmentFinished" class="text-muted fs-6 fw-normal">
-                        <i class="far fa-list-alt ps-2 text-primary"></i> <span class="myLink"> Assignment chhang zo tawhte hming...</span></a>
+                    <td colspan="3"><a href="stdAssignmentFinished1" class="text-muted fs-6 fw-normal">
+                        <i class="far fa-list-alt ps-2 text-primary"></i> <span class="myLink"> Assignment chhang zo tawhte...</span></a>
                         </td>
                     
                 </tr>
                 <tr>
                     
                     <td colspan="3"><a href="whotesttoday" class="text-muted fs-6 fw-normal">
-                        <i class="far fa-list-alt ps-2 text-primary"></i> <span class="myLink"> Vawiina assignment chhangtute hming...</span></a>
+                        <i class="far fa-list-alt ps-2 text-primary"></i> <span class="myLink"> Vawiina assignment chhangtute...</span></a>
                         </td>
                     
                 </tr>
@@ -384,7 +302,7 @@
           
         </table>
         
-      </div> -->
+      </div>
       
       </div> <!--row end-->
       

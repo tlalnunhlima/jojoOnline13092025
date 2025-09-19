@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose')
 
 const Schema = mongoose.Schema
@@ -8,7 +9,8 @@ const testScoreSchema = new Schema({
     
     nameOfSubject: {
         type: String,
-        required: [true, 'Please answer the question']
+        required: [true, 'Please answer the question'],
+        index: true   // 👈 speeds up queries on this field
     },
     chapterNo: {
        type: String,

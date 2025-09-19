@@ -60,111 +60,17 @@
           
           <tbody>
             
-      <% 
-            // Get today's date
-            var todaysDate = new Date(); 
-            
-            var studentName = [];
-            
-            if(Students.length > 0) {
-              
-             for (var i=0; i < Students.length; i++) {
-              
-                    if( Students[i].assignmentTheory != undefined ) {
-          
-                    for (var k=0; k < Students[i].assignmentTheory.length; k++) {
-                        
-                        if( Students[i].assignmentTheory[k] != undefined && Students[i].assignmentTheory[k].dateSubmitted.setHours(0,0,0,0) ==  todaysDate.setHours(0,0,0,0)) {
-              
-                            studentName.push(Students[i].username);
-                            
-             } } } }%>
-            
-            <% 
-              
-             for (var i=0; i < Students.length; i++) {
-              
-                    if( Students[i].assignmentTheory102 != undefined ) {
-          
-                    for (var k=0; k < Students[i].assignmentTheory102.length; k++) {
-                        
-                        if( Students[i].assignmentTheory102[k] != undefined && Students[i].assignmentTheory102[k].dateSubmitted.setHours(0,0,0,0) ==  todaysDate.setHours(0,0,0,0)) {
-              
-                            studentName.push(Students[i].username);
-        
-             } } } }%>
-            
-            <% 
-              
-             for (var i=0; i < Students.length; i++) {
-              
-                    if( Students[i].assignmentTheory103 != undefined ) {
-          
-                    for (var k=0; k < Students[i].assignmentTheory103.length; k++) {
-                        
-                        if( Students[i].assignmentTheory103[k] != undefined && Students[i].assignmentTheory103[k].dateSubmitted.setHours(0,0,0,0) ==  todaysDate.setHours(0,0,0,0)) {
-                            studentName.push(Students[i].username);
-        
-            } } } }%>
-            <% 
-              
-             for (var i=0; i < Students.length; i++) {
-              
-                    if( Students[i].assignmentTheory104 != undefined ) {
-          
-                    for (var k=0; k < Students[i].assignmentTheory104.length; k++) {
-                        
-                        if( Students[i].assignmentTheory104[k] != undefined && Students[i].assignmentTheory104[k].dateSubmitted.setHours(0,0,0,0) ==  todaysDate.setHours(0,0,0,0)) {
-                        studentName.push(Students[i].username);
-        
-             } } } }%>
-            
-            <% 
-             for (var i=0; i < Students.length; i++) {
-              
-                    if( Students[i].assignmentTheory105 != undefined ) {
-          
-                    for (var k=0; k < Students[i].assignmentTheory105.length; k++) {
-                        
-                        if( Students[i].assignmentTheory105[k] != undefined && Students[i].assignmentTheory105[k].dateSubmitted.setHours(0,0,0,0) ==  todaysDate.setHours(0,0,0,0)) {
-              
-                            studentName.push(Students[i].username);
-        
-            } } } }%>
-            
-            <% 
-              
-             for (var i=0; i < Students.length; i++) {
-              
-                    if( Students[i].assignmentTheory106 != undefined ) {
-          
-                    for (var k=0; k < Students[i].assignmentTheory106.length; k++) {
-                        
-                        if( Students[i].assignmentTheory106[k] != undefined && Students[i].assignmentTheory106[k].dateSubmitted.setHours(0,0,0,0) ==  todaysDate.setHours(0,0,0,0)) {
-              
-                            studentName.push(Students[i].username);
-              
-                        } } } } %>
-             
-            <% 
-            
-            var uniqueName = studentName.filter(onlyUnique);
-            
-            for(var i=0; i < uniqueName.length; i++) {
-            
-            %>
-             <tr>
-                          <td class="border text-center"> <%= i + 1 %> </td>
-                          
-                          <td class="border" >
-          
-                                <%= capitalizeFirstLetter(uniqueName[i]) %>
-                            
-                          </td>
-                          
-                        </tr>
-            
-            <% } } %>
+     <tbody>
+  <% if (names && names.length) { %>
+    <% names.forEach((n, i) => { %>
+      <tr>
+        <td class="border text-center"><%= i + 1 %></td>
+        <td class="border"><%= capitalizeFirstLetter(n) %></td>
+      </tr>
+    <% }) %>
+  <% } %>
+</tbody>
+
             
           </tbody>
           

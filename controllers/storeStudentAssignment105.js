@@ -1,520 +1,86 @@
+// controllers/assignments/insertAssignmentRecord105.js
 const Student = require('../models/Student')
 
-module.exports = async (req, res) => {
+// Centralized answer keys (strings or arrays for synonyms)
+const ANSWER_KEYS = {
+  'Chapter-1': ['Lasso', 'Brush tool', 'Blur Tool', 'Custom Shape tool', 'Hand tool'],
+  'Chapter-2': ['72 to 96 ppi', 'Three dimensional', 'PNG', 'Cloning image', 'vector and raster'],
+  'Chapter-3': ['Duplicating', 'Clipping group', 'Eye icon', 'Grouping', 'Layer > New > Layer...'],
+  'Chapter-4': ['Alpha', 'Right', 'Black and white', 'Layer menu > Remove layer mask > apply', '8-bit'],
+  'Chapter-5': ['Gradient', 'unmask', 'Layers', 'Image > adjustment'], // 4 questions
+  'Chapter-6': ['linked', 'Window > Styles', 'Add a layer style'], // 3 questions
+  'Chapter-7': ['path selection tool', 'Curve segment', 'pen tool', 'make work path', 'The Pen Tool'],
+  'Chapter-8': ['Image > Adjustments > Levels...', 'Color balance', 'Color Levels'], // 3
+  'Chapter-9': ['-100 to +100', '10% to 300%', 'Hue', 'Sponge', 'Brightness'],
+  'Chapter-10': ['24', 'Identical pixels dimensions', 'Grayscale', 'Channel palette menu', 'History palette'],
+  'Chapter-11': ['Masking', 'quick mask mode', '8 bit'], // 3
+  'Chapter-12': ['Render', '50-300mm zoom, 55mm prime, 105mm prime', 'Liquify filter', 'Tile filter', 'a 3D effect'],
+  'Chapter-13': ['Photoshop', 'ImageReady', '1 to 999', 'Rasterizing', 'Eyedropper'],
+};
 
-        insertAssignmentRecord(req, res);
- 
-    
+const normalize = v => (typeof v === 'string' ? v.trim().toLowerCase() : '');
+const matches = (userValue, correctSpec) => {
+  const u = normalize(userValue);
+  const arr = Array.isArray(correctSpec) ? correctSpec : [correctSpec];
+  return arr.some(c => normalize(c) === u);
+};
+
+function gradeChapter(chapterName, body) {
+  const key = ANSWER_KEYS[chapterName];
+  if (!key) return { correct: 0, wrongQs: [], total: 0 };
+
+  const responses = [body.dcaMCQ1, body.dcaMCQ2, body.dcaMCQ3, body.dcaMCQ4, body.dcaMCQ5];
+  let correct = 0;
+  const wrongQs = [];
+
+  for (let i = 0; i < key.length; i++) {
+    const expected = key[i];
+    const provided = responses[i] ?? '';
+    if (matches(provided, expected)) correct++;
+    else wrongQs.push(`Q${i + 1}`);
+  }
+  return { correct, wrongQs, total: key.length };
 }
 
+module.exports = async (req, res) => {
+  try {
+    const {
+      _id: studentId,
+      subjectName,
+      chapterName,
+      dcaMCQ1, dcaMCQ2, dcaMCQ3, dcaMCQ4, dcaMCQ5,
+    } = req.body;
 
-function insertAssignmentRecord(req, res) {
-    
-    //count of correct and incorrect answered
-                            var correctCount = 0;
-                            var incorrect = 0;
-                            var questionNumber = [];
-    
-    if(req.body.chapterName == 'Chapter-1') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Lasso') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Brush tool') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Blur Tool') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Custom Shape tool') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Hand tool') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
+    if (!studentId || !chapterName) {
+      return res.redirect(req.get('referer') || '/');
     }
-    
-    if(req.body.chapterName == 'Chapter-2') {
-    
-                           //question 1
-                          if(req.body.dcaMCQ1 == '72 to 96 ppi') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Three dimensional') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'PNG') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Cloning image') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'vector and raster') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-                  
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-3') {
-    
-                           //question 1
-                          if(req.body.dcaMCQ1 == 'Duplicating') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Clipping group') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Eye icon') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Grouping') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Layer > New > Layer...') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    }
-    
-    if(req.body.chapterName == 'Chapter-4') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Alpha') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Right') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Black and white') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Layer menu > Remove layer mask > apply') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == '8-bit') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-5') {
-    
-                           //question 1
-                          if(req.body.dcaMCQ1 == 'Gradient') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'unmask') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Layers') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Image > adjustment') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-6') {
-    
-                           //question 1
-                          if(req.body.dcaMCQ1 == 'linked') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Window > Styles') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Add a layer style') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-7') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'path selection tool') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Curve segment') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'pen tool') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'make work path') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'The Pen Tool') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-8') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Image > Adjustments > Levels...') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Color balance') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Color Levels') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-9') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == '-100 to +100') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == '10% to 300%') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Hue') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Sponge') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Brightness') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-10') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == '24') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Identical pixels dimensions') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Grayscale') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Channel palette menu') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'History palette') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-                          
-    }
-    
-    if(req.body.chapterName == 'Chapter-11') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Masking') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'quick mask mode') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == '8 bit') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                          
-    }
-    
-    if(req.body.chapterName == 'Chapter-12') {
-    
-                           //question 1
-                          if(req.body.dcaMCQ1 == 'Render') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == '50-300mm zoom, 55mm prime, 105mm prime') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Liquify filter') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Tile filter') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'a 3D effect') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-                          
-    }
-    
-    if(req.body.chapterName == 'Chapter-13') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Photoshop') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'ImageReady') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == '1 to 999') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Rasterizing') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Eyedropper') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-                          
-    }
-    
-    var assignmentTheoryArray = {subjectName: req.body.subjectName, chapterName: req.body.chapterName, mcq1: req.body.dcaMCQ1, 
-    
-    mcq2:req.body.dcaMCQ2, mcq3:req.body.dcaMCQ3, mcq4: req.body.dcaMCQ4, mcq5: req.body.dcaMCQ5,
-        
-        Scored: correctCount, totalMark: req.body.totalMark };
-    
-        Student.findOneAndUpdate({ _id: req.body._id }, 
-               
-               {$push: {assignmentTheory105 : assignmentTheoryArray }}, { new: true },
-               
-                      function (error, success) {
-                          
-                            if (success) {
-                                
-                                res.redirect(req.get('referer'));
-                               
-                                console.log('assignment updated - miau miau');
-                                
-                                
-                            } else {
-                                
-                               console.log('Error during exam assignment record update : ' + error);
-                               
-                               res.redirect(req.get('referer'));
-                                
 
-                            }
-                    
-                });
-                
-            }
-            
+    const { correct, wrongQs, total } = gradeChapter(chapterName, req.body);
+
+    const record = {
+      subjectName,
+      chapterName,
+      mcq1: dcaMCQ1,
+      mcq2: dcaMCQ2,
+      mcq3: dcaMCQ3,
+      mcq4: dcaMCQ4,
+      mcq5: dcaMCQ5,
+      Scored: correct,
+      totalMark: total,
+      wrongQuestions: wrongQs,
+      percentage: total ? Math.round((correct / total) * 100) : 0,
+      dateSubmitted: new Date(),
+    };
+
+    await Student.findByIdAndUpdate(
+      studentId,
+      { $push: { assignmentTheory105: record } },
+      { new: false }
+    );
+
+    return res.redirect(req.get('referer') || '/');
+  } catch (err) {
+    console.error('Error during exam assignment record update:', err);
+    return res.redirect(req.get('referer') || '/');
+  }
+};

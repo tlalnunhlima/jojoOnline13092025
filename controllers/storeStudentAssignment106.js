@@ -1,555 +1,84 @@
-const Student = require('../models/Student')
+const Student = require('../models/Student');
+
+// One source of truth: Q1..Qn in order for each chapter
+const ANSWERS = {
+  'Chapter-1':  ['Ruler', '1985', 'Revert', 'Ctrl + Shift + \\', 'Bullet and Numbering'],
+  'Chapter-2':  ['Save as', 'Aldus Manucius', 'Dimensions', 'Document Setup', 'Bleed'],
+  'Chapter-3':  ['Pointer tool', 'Object', 'Rounded Corners', 'Autoflow', '100'],
+  'Chapter-4':  ['Top', 'Text block', 'Layout', 'Application software', 'Document'],
+  'Chapter-5':  ['Place', 'Cropping', 'Morphing', 'Element', 'Text wrap'],
+  'Chapter-6':  ['Shift + tab', 'Control palette', 'Sorting pages', 'Grouping', 'Control palette'],
+  'Chapter-7':  ['Not editable', 'Character specification', 'fully justified', 'Gutter', 'Keyline'],
+  'Chapter-8':  ['Master Page', '1 to 999', 'Kerning', 'Ctrl+Shift+P', 'Master page'],
+  'Chapter-9':  ['Apply button', 'Leading', 'One point line', 'Alt+G', '5'],
+  'Chapter-10': ['Story Editor', 'Story Editor', 'Spelling', 'Utilities', 'Layout Editor'],
+  'Chapter-11': ['Desktop publishing', 'Define style', 'Automatically'],
+  'Chapter-12': ['Table of Content', 'TINT', 'Primary'],
+  'Chapter-13': ['Ctrl+Alt+]', 'Frame option', 'Inset'],
+  'Chapter-14': ['Layers palette', 'Layers', 'Cutting'],
+};
+
+const norm = s => (s ?? '').toString().trim().toLowerCase();
 
 module.exports = async (req, res) => {
+  try {
+    await insertAssignmentRecord(req, res);
+  } catch (err) {
+    console.error('Error during exam assignment record update:', err);
+    if (!res.headersSent) res.redirect(req.get('referer'));
+  }
+};
 
-        insertAssignmentRecord(req, res);
- 
-    
+async function insertAssignmentRecord(req, res) {
+  const { _id, subjectName, chapterName } = req.body;
+
+  const key = ANSWERS[chapterName];
+  if (!key) {
+    console.warn('Unknown chapterName:', chapterName);
+    if (!res.headersSent) res.redirect(req.get('referer'));
+    return;
+  }
+
+  // Collect the student’s answers in order (Q1..Qn) based on the key length
+  const userAnswers = key.map((_, i) => req.body[`dcaMCQ${i + 1}`]);
+
+  // Grade
+  let score = 0;
+  const wrongQuestions = [];
+  userAnswers.forEach((ans, i) => {
+    if (norm(ans) === norm(key[i])) score++;
+    else wrongQuestions.push(`Q${i + 1}`);
+  });
+
+  // Build the subdocument (keep your existing field names)
+  const assignmentTheoryArray = {
+    subjectName,
+    chapterName,
+    mcq1: userAnswers[0],
+    mcq2: userAnswers[1],
+    mcq3: userAnswers[2],
+    mcq4: userAnswers[3],
+    mcq5: userAnswers[4],
+    Scored: score,
+    totalMark: key.length,
+    wrongQuestions,          // optional but useful
+    submittedAt: new Date()
+  };
+
+  // Prevent duplicate submission for the same chapter (remove the guard to allow multiple attempts)
+  const result = await Student.updateOne(
+  { _id },
+  { $push: { assignmentTheory106: assignmentTheoryArray } }
+);
+
+
+  if (result.modifiedCount === 0) {
+    console.log(`Submission for ${chapterName} already exists for student ${_id}. Skipping push.`);
+    // If you want multiple attempts instead:
+    // await Student.updateOne({ _id }, { $push: { assignmentTheory106: assignmentTheoryArray } });
+  } else {
+    console.log('assignment updated - miau miau');
+  }
+
+  if (!res.headersSent) res.redirect(req.get('referer'));
 }
-
-
-function insertAssignmentRecord(req, res) {
-    
-    //count of correct and incorrect answered
-                            var correctCount = 0;
-                            var incorrect = 0;
-                            var questionNumber = [];
-    
-    if(req.body.chapterName == 'Chapter-1') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Ruler') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == '1985') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Revert') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Ctrl + Shift + \\') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Bullet and Numbering') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-2') {
-    
-                           //question 1
-                          if(req.body.dcaMCQ1 == 'Save as') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Aldus Manucius') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Dimensions') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Document Setup') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Bleed') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-                  
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-3') {
-    
-                           //question 1
-                          if(req.body.dcaMCQ1 == 'Pointer tool') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Object') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Rounded Corners') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Autoflow') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == '100') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    }
-    
-    if(req.body.chapterName == 'Chapter-4') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Top') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Text block') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Layout') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Application software') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Document') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-5') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Place') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Cropping') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Morphing') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Element') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Text wrap') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-6') {
-    
-                            //question 1
-                          if(req.body.dcaMCQ1 == 'Shift + tab') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Control palette') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Sorting pages') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Grouping') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Control palette') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-7') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Not editable') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Character specification') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'fully justified') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Gutter') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Keyline') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-8') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Master Page') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == '1 to 999') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Kerning') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Ctrl+Shift+P') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Master page') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-9') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Apply button') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Leading') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'One point line') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Alt+G') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == '5') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-10') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Story Editor') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Story Editor') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Spelling') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Utilities') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Layout Editor') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-                          
-    }
-    
-    if(req.body.chapterName == 'Chapter-11') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Desktop publishing') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Define style') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Automatically') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                          
-    }
-    
-    if(req.body.chapterName == 'Chapter-12') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Table of Content') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'TINT') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Primary') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                          
-    }
-    
-    if(req.body.chapterName == 'Chapter-13') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Ctrl+Alt+]') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Frame option') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Inset') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                  
-                          
-    }
-    
-    if(req.body.chapterName == 'Chapter-14') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Layers palette') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Layers') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Cutting') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                  
-                          
-    }
-    
-    var assignmentTheoryArray = {subjectName: req.body.subjectName, chapterName: req.body.chapterName, mcq1: req.body.dcaMCQ1, 
-    
-    mcq2:req.body.dcaMCQ2, mcq3:req.body.dcaMCQ3, mcq4: req.body.dcaMCQ4, mcq5: req.body.dcaMCQ5,
-        
-        Scored: correctCount, totalMark: req.body.totalMark };
-    
-        Student.findOneAndUpdate({ _id: req.body._id }, 
-               
-               {$push: {assignmentTheory106 : assignmentTheoryArray }}, { new: true },
-               
-                      function (error, success) {
-                          
-                            if (success) {
-                                
-                                res.redirect(req.get('referer'));
-                               
-                                console.log('assignment updated - miau miau');
-                                
-                                
-                            } else {
-                                
-                               console.log('Error during exam assignment record update : ' + error);
-                               
-                               res.redirect(req.get('referer'));
-                                
-
-                            }
-                    
-                });
-                
-            }
-            

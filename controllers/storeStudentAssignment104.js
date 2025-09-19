@@ -1,290 +1,96 @@
-const Student = require('../models/Student')
+// controllers/assignments/insertAssignmentRecord104.js
+const Student = require('../models/Student');
 
-module.exports = async (req, res) => {
+// Centralized answer keys (strings or arrays for synonyms)
+const ANSWER_KEYS = {
+  'Chapter-1': [
+    'Tim Berner-Lee',
+    'Hyperlink',
+    'Shareware',
+    'Internet Service Provider (ISP)',
+    'Authentication',
+  ],
+  'Chapter-2': ['Web clients', 'User Network', 'AltaVista', 'Remote login', 'Two'],
+  'Chapter-3': [
+    'Space',
+    'Spam',
+    'Simple Mail Transfer Protocol',
+    '64KB',
+    'Post Office Protocol version 3',
+  ],
+  'Chapter-4': ['Java', 'E-commerce', 'Four', 'Firewall', 'Whiteboard Application'],
+  'Chapter-5': ['Auditing', 'Cryptography', 'Cyber crime', 'unauthorized attack', 'Packet'],
+  'Chapter-6': ['No one', 'Anatomy', 'four', 'Newsgroup', 'Broadband Connection'],
+};
 
-        insertAssignmentRecord(req, res);
- 
-    
+// Helpers
+const normalize = v => (typeof v === 'string' ? v.trim().toLowerCase() : '');
+const matches = (userValue, correctSpec) => {
+  const u = normalize(userValue);
+  const arr = Array.isArray(correctSpec) ? correctSpec : [correctSpec];
+  return arr.some(c => normalize(c) === u);
+};
+
+function gradeChapter(chapterName, body) {
+  const key = ANSWER_KEYS[chapterName];
+  if (!key) return { correct: 0, wrongQs: [], total: 0 };
+
+  const responses = [body.dcaMCQ1, body.dcaMCQ2, body.dcaMCQ3, body.dcaMCQ4, body.dcaMCQ5];
+
+  let correct = 0;
+  const wrongQs = [];
+  for (let i = 0; i < key.length; i++) {
+    const expected = key[i];
+    const provided = responses[i] ?? '';
+    if (matches(provided, expected)) correct++;
+    else wrongQs.push(`Q${i + 1}`);
+  }
+  return { correct, wrongQs, total: key.length };
 }
 
+module.exports = async (req, res) => {
+  try {
+    const {
+      _id: studentId,
+      subjectName,
+      chapterName,
+      dcaMCQ1,
+      dcaMCQ2,
+      dcaMCQ3,
+      dcaMCQ4,
+      dcaMCQ5,
+    } = req.body;
 
-function insertAssignmentRecord(req, res) {
-    
-    
-                             //count of correct and incorrect answered
-                            var correctCount = 0;
-                            var incorrect = 0;
-                            var questionNumber = [];
-    
-if(req.body.chapterName == 'Chapter-1') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Tim Berner-Lee') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Hyperlink') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Shareware') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Internet Service Provider (ISP)') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Authentication') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
+    if (!studentId || !chapterName) {
+      return res.redirect(req.get('referer') || '/');
     }
-    
-    if(req.body.chapterName == 'Chapter-2') {
-    
-                           //question 1
-                          if(req.body.dcaMCQ1 == 'Web clients') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'User Network') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'AltaVista') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Remote login') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Two') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-3') {
-    
-                           //question 1
-                          if(req.body.dcaMCQ1 == 'Space') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Spam') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Simple Mail Transfer Protocol') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == '64KB') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Post Office Protocol version 3') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-4') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Java') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'E-commerce') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Four') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Firewall') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Whiteboard Application') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-5') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Auditing') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Cryptography') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Cyber crime') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'unauthorized attack') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Packet') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-6') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'No one') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Anatomy') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'four') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Newsgroup') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Broadband Connection') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-var assignmentTheoryArray = {subjectName: req.body.subjectName, chapterName: req.body.chapterName, mcq1: req.body.dcaMCQ1, 
-    
-    mcq2:req.body.dcaMCQ2, mcq3:req.body.dcaMCQ3, mcq4: req.body.dcaMCQ4, mcq5: req.body.dcaMCQ5,
-        
-        Scored: correctCount, totalMark: req.body.totalMark };
-    
-        Student.findOneAndUpdate({ _id: req.body._id }, 
-               
-               {$push: {assignmentTheory104 : assignmentTheoryArray }}, { new: true },
-               
-                      function (error, success) {
-                          
-                            if (success) {
-                                
-                                res.redirect(req.get('referer'));
-                               
-                                console.log('assignment updated - miau miau');
-                                
-                                
-                            } else {
-                                
-                               console.log('Error during exam assignment record update : ' + error);
-                               
-                               res.redirect(req.get('referer'));
-                                
 
-                            }
-                    
-                });
-                
-            }
-            
+    const { correct, wrongQs, total } = gradeChapter(chapterName, req.body);
+
+    const assignmentTheoryArray = {
+      subjectName,
+      chapterName,
+      mcq1: dcaMCQ1,
+      mcq2: dcaMCQ2,
+      mcq3: dcaMCQ3,
+      mcq4: dcaMCQ4,
+      mcq5: dcaMCQ5,
+      Scored: correct,
+      totalMark: total,                                  // derive from key
+      wrongQuestions: wrongQs,
+      percentage: total ? Math.round((correct / total) * 100) : 0,
+      dateSubmitted: new Date(),
+    };
+
+    await Student.findByIdAndUpdate(
+      studentId,
+      { $push: { assignmentTheory104: assignmentTheoryArray } }, // keep your target array
+      { new: false }
+    );
+
+    return res.redirect(req.get('referer') || '/');
+  } catch (err) {
+    console.error('Error during exam assignment record update : ', err);
+    return res.redirect(req.get('referer') || '/');
+  }
+};

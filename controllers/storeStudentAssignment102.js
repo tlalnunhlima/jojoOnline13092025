@@ -1,435 +1,133 @@
-const Student = require('../models/Student')
+// controllers/assignments/insertAssignmentRecord102.js
+const Student = require('../models/Student');
 
-module.exports = async (req, res) => {
+// CENTRALIZED ANSWER KEYS
+// Use strings for exact answers, or arrays for synonyms
+const ANSWER_KEYS = {
+  'Chapter-1': [
+    'Virus Removal',
+    'Hardware',
+    'All of these',
+    'Operating System',
+    'Operating System',
+  ],
+  'Chapter-2': [
+    'Multi user OS',
+    "1980's",
+    'Start Button',
+    '8,3',
+    'Dynamic Linked Library',
+  ],
+  'Chapter-3': [
+    'Windows',
+    'November 20, 1985',
+    '1990',
+    'Microsoft Windows',
+    'Microsoft Disk Operating System',
+  ],
+  'Chapter-4': ['Desktop', 'Icons', 'Taskbar', 'Search', 'Scrollbar'],
+  'Chapter-5': ['file', 'Ctrl + A', 'two', 'Ctrl + Shift + N', 'F2'],
+  'Chapter-6': [
+    'Original Equipment Manufacturer',
+    'All Programs',
+    'Windows key + R',
+    'calc',
+    'All of the above',
+  ],
+  'Chapter-7': [
+    'Shortcut',
+    'Small arrow in the lower left corner',
+    'All of the above',
+    // Only 3 questions for this chapter
+  ],
+  'Chapter-8': [
+    'Editing textual data',
+    'Wordpad',
+    'Control Panel',
+    'System restore',
+    'Notepad',
+  ],
+  'Chapter-9': ['MS-DOS', 'Date only', 'MD', 'CD', 'Internal'],
+  'Chapter-10': [
+    'All primary file name',
+    'Virtual Memory',
+    'First In First Out',
+    'Main Memory',
+    'internal and external',
+  ],
+};
 
-        insertAssignmentRecord(req, res);
- 
-    
+// helpers
+const normalize = v => (typeof v === 'string' ? v.trim().toLowerCase() : '');
+const matches = (userValue, correctSpec) => {
+  const u = normalize(userValue);
+  const arr = Array.isArray(correctSpec) ? correctSpec : [correctSpec];
+  return arr.some(c => normalize(c) === u);
+};
+
+function gradeChapter(chapterName, body) {
+  const key = ANSWER_KEYS[chapterName];
+  if (!key) return { correct: 0, wrongQs: [], total: 0 };
+
+  // Gather responses in order; allow chapters with <5 questions
+  const responses = [
+    body.dcaMCQ1, body.dcaMCQ2, body.dcaMCQ3, body.dcaMCQ4, body.dcaMCQ5,
+  ];
+
+  let correct = 0;
+  const wrongQs = [];
+  for (let i = 0; i < key.length; i++) {
+    const expected = key[i];
+    const provided = responses[i] ?? '';
+    if (matches(provided, expected)) correct++;
+    else wrongQs.push(`Q${i + 1}`);
+  }
+  return { correct, wrongQs, total: key.length };
 }
 
+module.exports = async (req, res) => {
+  try {
+    const {
+      _id: studentId,
+      subjectName,
+      chapterName,
+      dcaMCQ1,
+      dcaMCQ2,
+      dcaMCQ3,
+      dcaMCQ4,
+      dcaMCQ5,
+    } = req.body;
 
-function insertAssignmentRecord(req, res) {
-    
-                            //count of correct and incorrect answered
-                            var correctCount = 0;
-                            var incorrect = 0;
-                            var questionNumber = [];
-    
-    if(req.body.chapterName == 'Chapter-1') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Virus Removal') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Hardware') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'All of these') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Operating System') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Operating System') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
+    if (!studentId || !chapterName) {
+      return res.redirect(req.get('referer') || '/');
     }
-    
-    if(req.body.chapterName == 'Chapter-2') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Multi user OS') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == '1980\'s') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Start Button') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == '8,3') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Dynamic Linked Library') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-3') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Windows') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'November 20, 1985') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == '1990') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Microsoft Windows') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Microsoft Disk Operating System') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-4') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Desktop') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Icons') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Taskbar') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Search') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Scrollbar') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-5') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'file') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Ctrl + A') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'two') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Ctrl + Shift + N') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'F2') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-6') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Original Equipment Manufacturer') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'All Programs') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Windows key + R') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'calc') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'All of the above') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-7') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Shortcut') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Small arrow in the lower left corner') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'All of the above') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-8') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'Editing textual data') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Wordpad') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'Control Panel') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'System restore') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Notepad') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-9') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'MS-DOS') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Date only') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'MD') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'CD') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'Internal') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-    
-    }
-    
-    if(req.body.chapterName == 'Chapter-10') {
-    
-                          //question 1
-                          if(req.body.dcaMCQ1 == 'All primary file name') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q1');
-                          }
-                          //question 2
-                          if(req.body.dcaMCQ2 == 'Virtual Memory') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q2');
-                          }
-                          //question 3
-                          if(req.body.dcaMCQ3 == 'First In First Out') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q3');
-                          }
-                           //question 4
-                          if(req.body.dcaMCQ4 == 'Main Memory') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q4');
-                          }
-                           //question 5
-                          if(req.body.dcaMCQ5 == 'internal and external') {
-                            correctCount++;
-                          } else {
-                            incorrect++;
-                            questionNumber.push('Q5');
-                          }
-                          
-    }
-    
-    var assignmentTheoryArray = {subjectName: req.body.subjectName, chapterName: req.body.chapterName, mcq1: req.body.dcaMCQ1, 
-    
-    mcq2:req.body.dcaMCQ2, mcq3:req.body.dcaMCQ3, mcq4: req.body.dcaMCQ4, mcq5: req.body.dcaMCQ5,
-        
-        Scored: correctCount, totalMark: req.body.totalMark };
-    
-        Student.findOneAndUpdate({ _id: req.body._id }, 
-               
-               {$push: {assignmentTheory102 : assignmentTheoryArray }}, { new: true },
-               
-                      function (error, success) {
-                          
-                            if (success) {
-                                
-                                res.redirect(req.get('referer'));
-                               
-                                console.log('assignment updated - miau miau');
-                                
-                                
-                            } else {
-                                
-                               console.log('Error during exam assignment record update : ' + error);
-                               
-                               res.redirect(req.get('referer'));
-                                
 
-                            }
-                    
-                });
-                
-            }
-            
+    const { correct, wrongQs, total } = gradeChapter(chapterName, req.body);
+
+    const assignmentTheoryArray = {
+      subjectName,
+      chapterName,
+      mcq1: dcaMCQ1,
+      mcq2: dcaMCQ2,
+      mcq3: dcaMCQ3,
+      mcq4: dcaMCQ4,
+      mcq5: dcaMCQ5,
+      Scored: correct,
+      totalMark: total,
+      wrongQuestions: wrongQs,
+      percentage: total ? Math.round((correct / total) * 100) : 0,
+      dateSubmitted: new Date(),
+    };
+
+    await Student.findByIdAndUpdate(
+      studentId,
+      { $push: { assignmentTheory102: assignmentTheoryArray } },
+      { new: false }
+    );
+
+    return res.redirect(req.get('referer') || '/');
+  } catch (err) {
+    console.error('Error during exam assignment record update : ', err);
+    return res.redirect(req.get('referer') || '/');
+  }
+};

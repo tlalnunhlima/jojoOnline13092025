@@ -25,8 +25,7 @@
     
     <tr>
       
-      <th scope="col" class="ps-3 orangeColor fw-normal" style="width: 85px">Sl.</th>
-      
+
       <th scope="col" class="ps-3 orangeColor fw-normal" style="width: 85px">Regn.</th>
       
       <th scope="col" class="orangeColor fw-normal">Name of Student</th>
@@ -47,21 +46,8 @@
     
       <% 
       
-      var noOfBatchStd = 0;
       
-      if(students.length > 0) {
-        
-      for(var i=0; i < students.length; i++) { 
-      
-      if( students[i].batchSession == 'december' && students[i].regn > 278 && students[i].regn < 504 ) {
-        
-        noOfBatchStd++;
-
-          }
-        }
-      }
-      
-       if(noOfBatchStd > 0) {
+    if(students.length > 0) {
       
       for(var i=0; i < students.length; i++) { 
       
@@ -72,7 +58,6 @@
       
     <tr>
       
-      <th class="text-center fw-normal" ><%= noOfBatchStd--; %></th>
       
       <th class="text-center fw-normal" ><%= students[i].regn %></th>
       

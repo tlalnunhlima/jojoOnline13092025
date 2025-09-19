@@ -59,6 +59,7 @@
             <hr class="mx-auto w-25">
 
             <h5 class="text-dark fw-normal mt-4 px-3">DCA 1st Semester subject te</h5>
+            <div class="text-muted fw-normal m-2 px-3">( Chapter tawp lamah Theory Assignment a awm zel a, chhan nghal zel tur a ni e. )</div>
             
             <!-- DCA I Semester subject te... -->
             
@@ -95,39 +96,37 @@
                               
                               </div>
                         
-                        <% 
-                        
-                        var paidStudent = [];
-                        
-                        if(studentFee.length != undefined) {
-                        
-                        for(var i = 0; i < studentFee.length; i++) {
-                        
-                        if(studentFee[i].feeAmount >= 1000) {
-                            paidStudent.push('paid');
-                          }
-                        }
-                        }
-                        if(studentExamFee.length != undefined) {
-                        
-                        for(var i = 0; i < studentExamFee.length; i++) {
-                        
-                        if(studentExamFee[i].feeAmount == 1510) {
-                            paidStudent.push('paid');
-                          }
-                        }
-                        }
-                        if(studentOtherFee.length != undefined) {
-                        
-                        for(var i = 0; i < studentOtherFee.length; i++) {
-                        
-                        if(studentOtherFee[i].feeAmount >= 499) {
-                            paidStudent.push('paid');
-                          }
-                        }
-                        }
-                        if(paidStudent.includes('paid')) {
-                        %>
+<%
+  // Example: you might have a flag to tell if this is the "current" student
+  // (e.g. from the database or session)
+  const isCurrentStudent = studentFee.some(f => f.dateofpayment >= "2024-12-31") ||
+  studentExamFee.some(f => f.dateofpayment >= "2024-12-31") ||
+  studentOtherFee.some(f => f.dateofpayment >= "2024-12-31" ) ; 
+
+  let isPaid = false;
+
+  if (isCurrentStudent) {
+    // Current student rule: must pay full 1670
+    isPaid =
+      (Array.isArray(studentFee) && studentFee.some(f => f.feeAmount >= 1670)) ||
+      (Array.isArray(studentExamFee) && studentExamFee.some(f => f.feeAmount == 1670)) ||
+      (Array.isArray(studentOtherFee) && studentOtherFee.some(f => f.feeAmount >= 1670));
+  } else {
+    // Previous student rule: 499 or more is enough
+    isPaid =
+      (Array.isArray(studentFee) && studentFee.some(f => f.feeAmount >= 499)) ||
+      (Array.isArray(studentExamFee) && studentExamFee.some(f => f.feeAmount >= 499)) ||
+      (Array.isArray(studentOtherFee) && studentOtherFee.some(f => f.feeAmount >= 499));
+  }
+%>
+
+<% if (isPaid) { %>
+  <!-- Paid content -->
+
+
+   <!-- show content for paid student -->
+
+
                           
                          <div class=" col-lg-3 col-md-6 col-sm-6"> 
                               
@@ -225,10 +224,9 @@
                               
                               </div>
                               
-                        <% 
-                        
-                        if(paidStudent.includes('paid')) {
-                        %>
+                    
+                       
+<% if (isPaid) { %>
                               
                               <div class=" col-lg-3 col-md-6 col-sm-6"> 
                               
@@ -337,10 +335,8 @@
                               
                               </div>
                               
-                               <% 
-                        
-                        if(paidStudent.includes('paid')) {
-                        %>
+
+<% if (isPaid) { %>
                               
                               <div class=" col-lg-3 col-md-6 col-sm-6"> 
                               
@@ -502,10 +498,8 @@
                               
                               </div>
                               
-                               <% 
-                        
-                        if(paidStudent.includes('paid')) {
-                        %>
+                 
+<% if (isPaid) { %>
                               
                               <div class=" col-lg-3 col-md-6 col-sm-6"> 
                               
@@ -580,9 +574,8 @@
                               
                               </div>
                               
-                               <% 
-                        if(paidStudent.includes('paid')) {
-                        %>
+       
+<% if (isPaid) { %>
                               
                               <div class=" col-lg-3 col-md-6 col-sm-6"> 
                               
@@ -700,9 +693,8 @@
                               
                               </div>
                               
-                        <% 
-                        if(paidStudent.includes('paid')) {
-                        %>
+     
+<% if (isPaid) { %>
                               
                               <div class=" col-lg-3 col-md-6 col-sm-6"> 
                               

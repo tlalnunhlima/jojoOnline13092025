@@ -1,15 +1,8 @@
-<!-- -----------------footer section-------------------------- -->
-
-<footer class="footer border-top shadow d-flex justify-content-center bg-light p-3">
-  
-    <div class="text-muted small">&copy; 2018 
-    
-    <script>
-        new Date().getFullYear()>2018 && document.write("-"+new Date().getFullYear());
-    </script>, 
-    
-    Jojo Computer Institute.
-    
-    </div>
-    
+<footer class="footer border-top shadow-sm bg-light py-3" role="contentinfo" aria-label="Footer">
+  <div class="container text-center">
+    <small class="text-muted">
+      &copy; 2018<% const y = new Date().getFullYear(); if (y > 2018) { %>–<%= y %><% } %>
+      Jojo Computer Institute.
+    </small>
+  </div>
 </footer>

@@ -8,30 +8,15 @@ const moment = require('moment')
 
 const router = express.Router();
 
-const expressSession = require('express-session')
+const expressSession = require('express-session');
 
 const flash = require('connect-flash');
 
-
-
+const mongoose = require('mongoose');
 
 
 //global variable
 global.loggedIn = null;
-
-//flash errors message
-router.use(flash())
-
-
-router.use(expressSession({
-    
-    resave: false,
-    
-    saveUninitialized: true,
-    
-    secret: 'keyboard cat'
-}))
-
 
 router.use('*', (req, res, next) => {
     
@@ -42,6 +27,40 @@ router.use('*', (req, res, next) => {
 
 
 
+//flash errors message
+router.use(flash());
+
+
+router.use(expressSession({
+    
+    resave: false,
+    
+    saveUninitialized: true,
+    
+    secret: 'keyboard cat'
+}));
+
+const app = express();
+
+app.use(expressSession({
+  secret: process.env.SESSION_SECRET || 'supersecret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 1000 * 60 * 60 } // 1h
+}));
+
+app.use(flash());
+
+// Make flash messages available in all EJS views
+app.use((req, res, next) => {
+  res.locals.success = req.flash('success');
+  res.locals.error   = req.flash('error');
+  res.locals.info    = req.flash('info');
+  res.locals.warning = req.flash('warning');
+  next();
+});
+
+
 
 
 //ask authorisation to login
@@ -49,7 +68,7 @@ router.post('/auth/login', require('../controllers/authLoginStudent'))
 
 
 //save new student to database
-router.post('/users/register', require('../controllers/authSaveNewStudent'), require('../controllers/storeStudent'))
+router.post('/users/register', require('../controllers/storeStudent'))
 
 //update student fee payment
 router.post('/users/feeRegister', require('../controllers/storeStudentFee'))
@@ -298,17 +317,18 @@ router.get('/stdList', async (req, res) => {
     res.redirect('/');
 });
 
-//all student list for admin only view
 
-router.get('/allStdList', async (req, res) => {
+//december 2025 student list for admin only view
+
+router.get('/december2025Batch', async (req, res) => {
     
-const students = await Student.find({},{_id:1, regn:1, username:1,  fname: 1, address: 1, batchSession: 1, phone:1} ).sort({regn : -1}).populate('staffid');
+    const students = await Student.find({},{_id:1, regn:1, username:1,  fname: 1, batchSession: 1, admissionYear: 1,  address: 1, phone:1} ).sort({regn : -1}).populate('staffid');
     
    if(req.session.adminIdentity) {
     
-          return res.render('allStdList', {
+          return res.render('december2025Batch', {
             
-            viewTitle: 'All Student List',
+            viewTitle: 'December 2025 student list',
             
             username: req.session.username,
             
@@ -327,9 +347,267 @@ const students = await Student.find({},{_id:1, regn:1, username:1,  fname: 1, ad
         
         }
     
-    res.redirect('/stdList');
+   return res.redirect('/');
 });
 
+//june 2025 student list for admin only view
+
+router.get('/june2025Batch', async (req, res) => {
+    
+    const students = await Student.find({},{_id:1, regn:1, username:1,  fname: 1, batchSession: 1, admissionYear: 1, address: 1, phone:1} ).sort({regn : -1}).populate('staffid');
+    
+   if(req.session.adminIdentity) {
+    
+          return res.render('june2025Batch', {
+            
+            viewTitle: 'June 2025 student list',
+            
+            username: req.session.username,
+            
+            link1: req.session.myDashboard1,
+            
+            link2: req.session.myDashboard2,
+            
+            link3: req.session.myDashboard3,
+            
+            href1: req.session.hrefLink1,
+            
+            href2: req.session.hrefLink2,
+            
+            students
+        })
+        
+        }
+    
+   return res.redirect('/');
+});
+
+//december 2022 student list for admin only view
+
+router.get('/december2022Batch', async (req, res) => {
+    
+    const students = await Student.find({},{_id:1, regn:1, username:1,  fname: 1, batchSession: 1, admissionYear: 1,  address: 1, phone:1} ).sort({regn : -1}).populate('staffid');
+    
+   if(req.session.adminIdentity) {
+    
+          return res.render('december2022Batch', {
+            
+            viewTitle: 'December 2022 student list',
+            
+            username: req.session.username,
+            
+            link1: req.session.myDashboard1,
+            
+            link2: req.session.myDashboard2,
+            
+            link3: req.session.myDashboard3,
+            
+            href1: req.session.hrefLink1,
+            
+            href2: req.session.hrefLink2,
+            
+            students
+        })
+        
+        }
+    
+   return res.redirect('/');
+});
+
+//staff and outside student list for admin only view
+
+router.get('/staffOutsideBatch', async (req, res) => {
+    
+    const students = await Student.find({},{_id:1, regn:1, username:1,  fname: 1, batchSession: 1, admissionYear: 1,  address: 1, phone:1} ).sort({regn : -1}).populate('staffid');
+    
+   if(req.session.adminIdentity) {
+    
+          return res.render('staffOutsideBatch', {
+            
+            viewTitle: 'Jojo Staff and outside student list',
+            
+            username: req.session.username,
+            
+            link1: req.session.myDashboard1,
+            
+            link2: req.session.myDashboard2,
+            
+            link3: req.session.myDashboard3,
+            
+            href1: req.session.hrefLink1,
+            
+            href2: req.session.hrefLink2,
+            
+            students
+        })
+        
+        }
+    
+   return res.redirect('/');
+});
+
+
+
+
+//june 2023 student list for admin only view
+
+router.get('/june2023Batch', async (req, res) => {
+    
+    const students = await Student.find({},{_id:1, regn:1, username:1,  fname: 1, batchSession: 1, admissionYear: 1,  address: 1, phone:1} ).sort({regn : -1}).populate('staffid');
+    
+   if(req.session.adminIdentity) {
+    
+          return res.render('june2023Batch', {
+            
+            viewTitle: 'June 2023 student list',
+            
+            username: req.session.username,
+            
+            link1: req.session.myDashboard1,
+            
+            link2: req.session.myDashboard2,
+            
+            link3: req.session.myDashboard3,
+            
+            href1: req.session.hrefLink1,
+            
+            href2: req.session.hrefLink2,
+            
+            students
+        })
+        
+        }
+    
+   return res.redirect('/');
+});
+
+
+//december 2023 student list for admin only view
+
+router.get('/december2023Batch', async (req, res) => {
+    
+    const students = await Student.find({},{_id:1, regn:1, username:1,  fname: 1, batchSession: 1, admissionYear: 1,  address: 1, phone:1} ).sort({regn : -1}).populate('staffid');
+    
+   if(req.session.adminIdentity) {
+    
+          return res.render('december2023Batch', {
+            
+            viewTitle: 'December 2023 student list',
+            
+            username: req.session.username,
+            
+            link1: req.session.myDashboard1,
+            
+            link2: req.session.myDashboard2,
+            
+            link3: req.session.myDashboard3,
+            
+            href1: req.session.hrefLink1,
+            
+            href2: req.session.hrefLink2,
+            
+            students
+        })
+        
+        }
+    
+   return res.redirect('/');
+});
+
+//december 2024 student list for admin only view
+
+router.get('/december2024Batch', async (req, res) => {
+    
+    const students = await Student.find({},{_id:1, regn:1, username:1,  fname: 1, batchSession: 1, admissionYear: 1,  address: 1, phone:1} ).sort({regn : -1}).populate('staffid');
+    
+   if(req.session.adminIdentity) {
+    
+          return res.render('december2024Batch', {
+            
+            viewTitle: 'December 2024 student list',
+            
+            username: req.session.username,
+            
+            link1: req.session.myDashboard1,
+            
+            link2: req.session.myDashboard2,
+            
+            link3: req.session.myDashboard3,
+            
+            href1: req.session.hrefLink1,
+            
+            href2: req.session.hrefLink2,
+            
+            students
+        })
+        
+        }
+    
+   return res.redirect('/');
+});
+
+
+//june 2024 student list for admin only view
+
+router.get('/june2024Batch', async (req, res) => {
+    
+    const students = await Student.find({},{_id:1, regn:1, username:1,  fname: 1, batchSession: 1, admissionYear: 1,  address: 1, phone:1} ).sort({regn : -1}).populate('staffid');
+    
+   if(req.session.adminIdentity) {
+    
+          return res.render('june2024Batch', {
+            
+            viewTitle: 'June 2024 student list',
+            
+            username: req.session.username,
+            
+            link1: req.session.myDashboard1,
+            
+            link2: req.session.myDashboard2,
+            
+            link3: req.session.myDashboard3,
+            
+            href1: req.session.hrefLink1,
+            
+            href2: req.session.hrefLink2,
+            
+            students
+        })
+        
+        }
+    
+   return res.redirect('/');
+});
+
+
+router.get('/allStdList', async (req, res) => {
+  try {
+    if (!req.session.adminIdentity) {
+      return res.redirect('/stdList');
+    }
+
+    const students = await Student.find(
+      {},
+      { _id:1, regn:1, username:1, fname:1, address:1, batchSession:1, phone:1 }
+    )
+    .sort({ regn : -1 })
+    .populate('staffid');
+
+    res.render('allStdList', {
+      viewTitle: 'All Student List',
+      username: req.session.username,
+      link1: req.session.myDashboard1,
+      link2: req.session.myDashboard2,
+      link3: req.session.myDashboard3,
+      href1: req.session.hrefLink1,
+      href2: req.session.hrefLink2,
+      students
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
+  }
+});
 
 
 //june 2021 student list for admin only view
@@ -361,8 +639,9 @@ router.get('/june2021Batch', async (req, res) => {
         
         }
     
-    res.redirect('/');
+   return res.redirect('/');
 });
+
 
 //december 2021 student list for admin only view
 
@@ -426,66 +705,79 @@ router.get('/june2022Batch', async (req, res) => {
     res.redirect('/');
 });
 
-//new student register form ======================================
-
+// new student register form ======================================
 router.get('/register', async (req, res) => {
-    
- const allStudents = await Student.find({}, {_id:1, regn:1});   
-    
-   if(req.session.adminIdentity){
-        
-          return res.render('register', {
+  if (!req.session.adminIdentity) {
+    return res.redirect('/auth/loginStaff');
+  }
 
-            viewTitle: 'Register Student',
-            
-            errors: req.flash('validationErrors') &&  req.flash('errors'),
-            
-            students: req.body,
-            
-            allStudents
-            
-        });
-    } 
+  try {
+    const allStudents = await Student.find({}, { _id: 1, regn: 1 });
+
+    // Read flashes explicitly; don't use && which calls both unpredictably
+    const validationErrors = req.flash('validationErrors'); // []
+    const errors = req.flash('errors');   
+    // []
+
+
+    return res.render('register', {
+      viewTitle: 'Register Student',
+      // Merge both arrays so the view can iterate once
+      errors: [...errors, ...validationErrors],
+      // On GET there is no body—pass an empty object or prefill from session if you need to
+      students: {},
+      allStudents
+    });
     
-    res.redirect('/auth/loginStaff');
-}); 
+    
+  } catch (err) {
+    console.error('GET /register failed:', err);
+    return res.status(500).send('Server error');
+  }
+});
+
 
 //end of new student register form ======================================
 
-//edit student details
-
+// edit student details
 router.get('/editStudent/:id', async (req, res) => {
+  if (!req.session.adminIdentity) {
+    return res.redirect('/auth/loginStaff');
+  }
+
+  try {
+    const [student, allStudents] = await Promise.all([
+      Student.findById(req.params.id).lean(),
+      Student.find({}, { _id: 1, regn: 1 }).lean()
+    ]);
     
-const allStudents = await Student.find({});  
-    
-    if(req.session.adminIdentity) {
-    
-   await Student.findById(req.params.id, (err, doc) =>{
-       
-       if(!err) {
-        
-           return res.render('register', {
-       
-            viewTitle: 'Update student detail:',
-            
-            errors: req.flash('validationErrors') &&  req.flash('errors'),
-            
-            students: doc,
-            
-            allStudents
-                
-                });
-            }
-        });
-        
+   
+
+    if (!student) {
+      req.flash('errors', ['Student not found']);
+      return res.redirect('/stdList');
     }
+
+    const errors = req.flash('errors');                 // []
+    const validationErrors = req.flash('validationErrors'); // []
+    const formData = req.flash('formData')[0] || null;  // optional prefill
+
+      
+    return res.render('register', {
+      viewTitle: 'Update student detail:',
+      errors: [...errors, ...validationErrors],
+      students: formData || student,    // use flashed form data if present
+      allStudents
+    });
     
-    else {
-        
-        res.redirect('/')
-    }
-    
-})
+
+  } catch (err) {
+    console.error('GET /editStudent/:id failed:', err);
+    return res.status(500).send('Server error');
+  }
+});
+
+
 
 // staff section ================================
 
@@ -500,21 +792,16 @@ router.get('/auth/loginStaff', (req, res) => {
     
 });
 
-//register staff
+// register staff
 router.get('/auth/registerStaff', (req, res) => {
-    
-     if(req.session.adminIdentity && req.session.username == 'tmapuia') {
-    
-    res.render('registerStaff', {
-
-            viewTitle: 'Register new staff here'
-            
-        });
-        
-     }
-     
-     res.redirect('/');
+  if (req.session.adminIdentity && req.session.username === 'tmapuia') {
+    return res.render('registerStaff', { viewTitle: 'Register new staff here' });
+  }
+  return res.redirect('/');
 });
+
+
+
 
 router.get('/view/staffList', async (req, res) => {
     
@@ -522,7 +809,7 @@ router.get('/view/staffList', async (req, res) => {
     
     const staffs = await staff.find({});
     
-        res.render('staffList', {
+        return res.render('staffList', {
             
             viewTitle: 'Staff List',
             
@@ -531,122 +818,77 @@ router.get('/view/staffList', async (req, res) => {
         
     }
     
-    res.redirect('/');
-});
-
-//staff delete
-
-router.get('/staffList/delete/:id', (req, res) => {
-    
-    staff.findByIdAndRemove(req.params.id, (err, doc) => {
-        
-        if (!err) {
-            
-            res.redirect('/view/staffList');
-            
-        }
-        
-        else { console.log('Error in staff delete :' + err); }
-        
-    });
-    
+   return res.redirect('/');
 });
 
 
-//student delete
+// staff delete
+router.get('/staffList/delete/:id', async (req, res) => {
+  if (!(req.session.adminIdentity && req.session.username === 'tmapuia')) {
+    return res.redirect('/');
+  }
 
-router.get('/stdList/delete/:id', (req, res) => {
-    
-    Student.findByIdAndRemove(req.params.id, (err, doc) => {
-        
-        if (!err) {
-            
-            res.redirect('/stdList');
-            
-        }
-        
-        else { console.log('Error in student delete :' + err); }
-        
-    });
-    
+  try {
+    await staff.findByIdAndRemove(req.params.id);
+    return res.redirect('/view/staffList');
+  } catch (err) {
+    console.error('Error in staff delete:', err);
+    return res.status(500).send('Error deleting staff');
+  }
 });
 
 
-//studentfee field delete
 
-router.get('/studentFee/delete/:id/:feeId', async (req, res) => {
-    
-await Student.updateOne({_id: req.params.id}, { $pull: { studentFee : { _id : req.params.feeId } } }, { multi: true }, (err, doc) => {
-        
-        if (!err) {
-            
-            console.log('Student fee data deleted successfully');
-            
-            res.redirect(req.get('referer'));
-            
-        }
-        
-        else { 
-            
-            console.log('Error in student fee delete :' + err);
-        
-            res.redirect(req.get('referer'));
-        }
-        
-    });
-    
+// student delete
+router.get('/stdList/delete/:id', async (req, res) => {
+  try {
+    const deleted = await Student.findByIdAndDelete(req.params.id);
+
+    if (deleted) {
+      req.flash('success', 'Student deleted successfully.');
+    } else {
+      req.flash('warning', 'Student not found. Nothing was deleted.');
+    }
+
+  
+    res.redirect(req.get('referer') || '/allStdList'); // fallback if no referer
+  
+  } catch (err) {
+    console.error('Error in student delete:', err);
+    req.flash('error', 'Error deleting student. Please try again.');
+    res.redirect('/stdList');
+  }
 });
 
 
-//studentExamfee field delete
+// A tiny helper you already liked, now with flash: student fee deletion a ni e
+async function deleteFeeSubdoc(req, res, arrayField, label) {
+  try {
+    const result = await Student.updateOne(
+      { _id: req.params.id },
+      { $pull: { [arrayField]: { _id: req.params.feeId } } }
+    );
 
-router.get('/studentExamFee/delete/:id/:feeId', async (req, res) => {
-    
-await Student.updateOne({_id: req.params.id}, { $pull: { studentExamFee : { _id : req.params.feeId } } }, { multi: true }, (err, doc) => {
-        
-        if (!err) {
-            
-            console.log('Student exam fee data deleted successfully');
-            
-            res.redirect(req.get('referer'));
-            
-        }
-        
-        else { 
-            
-            console.log('Error in student exam fee delete :' + err);
-        
-            res.redirect(req.get('referer'));
-        }
-        
-    });
-    
-});
+    if (result.modifiedCount > 0) {
+      req.flash('success', `${label} deleted successfully.`);
+    } else {
+      req.flash('warning', `No matching ${label.toLowerCase()} found.`);
+    }
+  } catch (err) {
+    console.error(`Error deleting from ${arrayField}:`, err);
+    req.flash('error', `Could not delete ${label}. Please try again.`);
+  } finally {
+    res.redirect(req.get('referer') || '/stdList'); // fallback if no referer
+  }
+}
 
-//studentOtherFee field delete
+// Routes
+router.get('/studentFee/delete/:id/:feeId',      (req, res) => deleteFeeSubdoc(req, res, 'studentFee',      'Student fee'));
+router.get('/studentExamFee/delete/:id/:feeId',  (req, res) => deleteFeeSubdoc(req, res, 'studentExamFee',  'Student exam fee'));
+router.get('/studentOtherFee/delete/:id/:feeId', (req, res) => deleteFeeSubdoc(req, res, 'studentOtherFee', 'Student other fee'));
 
-router.get('/studentOtherFee/delete/:id/:feeId', async (req, res) => {
     
-await Student.updateOne({_id: req.params.id}, { $pull: { studentOtherFee : { _id : req.params.feeId } } }, { multi: true }, (err, doc) => {
-        
-        if (!err) {
-            
-            console.log('Student other fee data deleted successfully');
-            
-            res.redirect(req.get('referer'));
-            
-        }
-        
-        else { 
-            
-            console.log('Error in student other fee delete :' + err);
-        
-            res.redirect(req.get('referer'));
-        }
-        
-    });
-    
-});
+
 
 //student login panel
     
@@ -666,8 +908,6 @@ router.get('/std/loginStudent', (req, res) => {
 
 router.get('/all/stdDashboard', async (req, res) => {
   
-  //const Students = await Student.find({});  
-    
   const thisStudent = await Student.findOne({_id: req.session.userId});
   
     if(req.session.studentIdentity) {
@@ -691,7 +931,9 @@ router.get('/all/stdDashboard', async (req, res) => {
             studentId: req.session.userId,
             
             studentFee: req.session.studentFee,
+            
             studentExamFee: req.session.studentExamFee,
+            
             studentOtherFee: req.session.studentOtherFee,
             
             thisStudent,
@@ -704,40 +946,43 @@ router.get('/all/stdDashboard', async (req, res) => {
         
     }
         
-        res.redirect('/');
+       return res.redirect('/');
     
 });
 
 
-//student who test today
-
+// route.js
 router.get('/all/whotesttoday', async (req, res) => {
-  
-  const Students = await Student.find({}, {_id:1, username:1, assignmentTheory:1, 
-    assignmentTheory102:1, assignmentTheory103:1, assignmentTheory104:1, assignmentTheory105:1, assignmentTheory106:1
-});
-    if(req.session.adminIdentity || req.session.studentIdentity) {
-        
-        return res.render('whotesttoday', {
-            username: req.session.username,
-            link1: req.session.myDashboard1,
-            link2: req.session.myDashboard2,
-            link3: req.session.myDashboard3,
-            href1: req.session.hrefLink1,
-            href2: req.session.hrefLink2,
-            loginIdName: req.session.studentIdentity,
-            studentId: req.session.userId,
-            studentFee: req.session.studentFee,
-            studentExamFee: req.session.studentExamFee,
-            studentOtherFee: req.session.studentOtherFee,
-            Students,
-            moment
-        });
-        
+  const start = new Date();
+  start.setHours(0,0,0,0);
+  const end = new Date();
+  end.setHours(23,59,59,999);
+
+  const projection = { username: 1 }; // we only need names
+  const q = {
+    $or: [
+      { 'assignmentTheory.dateSubmitted':   { $gte: start, $lte: end } },
+      { 'assignmentTheory102.dateSubmitted':{ $gte: start, $lte: end } },
+      { 'assignmentTheory103.dateSubmitted':{ $gte: start, $lte: end } },
+      { 'assignmentTheory104.dateSubmitted':{ $gte: start, $lte: end } },
+      { 'assignmentTheory105.dateSubmitted':{ $gte: start, $lte: end } },
+      { 'assignmentTheory106.dateSubmitted':{ $gte: start, $lte: end } },
+    ]
+  };
+
+  const students = await Student.find(q, projection).lean();
+
+  // unique usernames (preserve order)
+  const seen = new Set();
+  const names = [];
+  for (const s of students) {
+    if (!seen.has(s.username)) {
+      seen.add(s.username);
+      names.push(s.username);
     }
-        
-        res.redirect('/');
-    
+  }
+
+  res.render('whotesttoday', { names });
 });
 
 
@@ -779,62 +1024,26 @@ router.get('/all/stdScoreboard', async (req, res) => {
 
 //============================
 
-//student top performers
-
-router.get('/all/stdTopPerformers', async (req, res) => {
-    
- const Students = await Student.find({}, {username:1, address:1, assignmentTheory:1, 
-    assignmentTheory102:1, assignmentTheory103:1, assignmentTheory104:1, assignmentTheory105:1, assignmentTheory106:1
-});
-    
-  const thisStudent = await Student.findOne({_id: req.session.userId});
-  
-    if(req.session.studentIdentity || req.session.adminIdentity) {
-        
-        return res.render('stdTopPerformers', {
-            
-            username: req.session.username,
-            
-            link1: req.session.myDashboard1,
-            
-            link2: req.session.myDashboard2,
-            
-            link3: req.session.myDashboard3,
-            
-            href1: req.session.hrefLink1,
-            
-            href2: req.session.hrefLink2,
-            
-            loginIdName: req.session.studentIdentity,
-            
-            studentId: req.session.userId,
-            
-            thisStudent,
-            
-          Students
-     
-        });
-        
-    }
-        
-        res.redirect('/');
-    
-});
 
 
-//============================
-
-//student top performers
+//student who finished assignment 
 
 router.get('/all/stdAssignmentFinished', async (req, res) => {
     
-const Students = await Student.find({}, {_id:1, username:1, address:1, assignmentTheory:1, 
-    assignmentTheory102:1, assignmentTheory103:1, assignmentTheory104:1, assignmentTheory105:1, assignmentTheory106:1
-});
+const Students = await Student.find(
+  { 
+    "assignmentTheory.0": { $exists: true },
+    "assignmentTheory102.0": { $exists: true },
+    "assignmentTheory103.0": { $exists: true },
+    "assignmentTheory104.0": { $exists: true },
+    "assignmentTheory105.0": { $exists: true },
+    "assignmentTheory106.0": { $exists: true }
+  },
+  { _id:1, regn: 1, username:1, address:1, assignmentTheory:1, 
+    assignmentTheory102:1, assignmentTheory103:1, assignmentTheory104:1, assignmentTheory105:1, assignmentTheory106:1 }).sort({regn : -1});
+
     
-  const thisStudent = await Student.findOne({_id: req.session.userId});
-  
-    if(req.session.studentIdentity || req.session.adminIdentity) {
+    if(req.session.adminIdentity || req.session.studentIdentity) {
         
         return res.render('stdAssignmentFinished', {
             
@@ -850,11 +1059,48 @@ const Students = await Student.find({}, {_id:1, username:1, address:1, assignmen
             
             href2: req.session.hrefLink2,
             
-            loginIdName: req.session.studentIdentity,
+            Students
+     
+        });
+        
+    }
+        
+        return res.redirect('/');
+    
+});
+
+//student who finished assignment from student view
+
+router.get('/all/stdAssignmentFinished1', async (req, res) => {
+    
+const Students = await Student.find(
+  { 
+    "assignmentTheory.0": { $exists: true },
+    "assignmentTheory102.0": { $exists: true },
+    "assignmentTheory103.0": { $exists: true },
+    "assignmentTheory104.0": { $exists: true },
+    "assignmentTheory105.0": { $exists: true },
+    "assignmentTheory106.0": { $exists: true }
+  },
+  { _id:1, regn: 1, username:1, address:1, assignmentTheory:1, 
+    assignmentTheory102:1, assignmentTheory103:1, assignmentTheory104:1, assignmentTheory105:1, assignmentTheory106:1 }).sort({regn : -1});
+
+    
+    if(req.session.studentIdentity) {
+        
+        return res.render('stdAssignmentFinished1', {
             
-            studentId: req.session.userId,
+            username: req.session.username,
             
-            thisStudent,
+            link1: req.session.myDashboard1,
+            
+            link2: req.session.myDashboard2,
+            
+            link3: req.session.myDashboard3,
+            
+            href1: req.session.hrefLink1,
+            
+            href2: req.session.hrefLink2,
             
             Students
      
@@ -862,98 +1108,129 @@ const Students = await Student.find({}, {_id:1, username:1, address:1, assignmen
         
     }
         
-        res.redirect('/');
+        return res.redirect('/');
     
 });
+
+
 
 //============================
 
 
-//student check score
-
+// student check score (student or admin)
 router.get('/assignment/checkScore/:id', async (req, res) => {
-    
-  const thisStudent = await Student.findOne({_id: req.params.id});
-  
-    if(req.session.studentIdentity || req.session.adminIdentity) {
-        
-        return res.render('assignmentCheckScore', {
-            
-            username: req.session.username,
-            
-            link1: req.session.myDashboard1,
-            
-            link2: req.session.myDashboard2,
-            
-            link3: req.session.myDashboard3,
-            
-            href1: req.session.hrefLink1,
-            
-            href2: req.session.hrefLink2,
-            
-            loginIdName: req.session.studentIdentity,
-            
-            studentId: req.session.userId,
-            
-            thisStudent
-     
-        });
-        
+  try {
+    // 1) Validate id early
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).render('404', { message: 'Invalid student id' });
     }
-        
-        res.redirect('/');
-    
+
+    // 2) Auth gate
+    const isAdmin = !!req.session.adminIdentity;
+    const isStudent = !!req.session.studentIdentity;
+
+    if (!isAdmin && !isStudent) {
+      return res.redirect('/');
+    }
+
+    // 3) Authorization (prevent IDOR)
+    // - Admin can view any student id
+    // - Student can view ONLY their own record
+    if (isStudent && !isAdmin) {
+      if (String(req.session.userId) !== String(id)) {
+        // choose one: 403 or redirect
+        return res.status(403).render('403', { message: 'Not allowed' });
+      }
+    }
+
+    // 4) Fetch only after access is allowed
+    const thisStudent = await Student.findById(id)
+      // .populate('assignmentTheory.verifierId') // <- add if you need it
+      .lean(); // faster for render if you don't need mongoose instance methods
+
+    if (!thisStudent) {
+      return res.status(404).render('404', { message: 'Student not found' });
+    }
+
+    // 5) Single render path
+    return res.render('assignmentCheckScore', {
+      username: req.session.username,
+      link1: req.session.myDashboard1,
+      link2: req.session.myDashboard2,
+      link3: req.session.myDashboard3,
+      href1: req.session.hrefLink1,
+      href2: req.session.hrefLink2,
+
+      // who is logged in (show student name if student; or admin identity)
+      loginIdName: isStudent ? req.session.studentIdentity : req.session.adminIdentity,
+
+      // current logged-in user's id (useful for conditionals in EJS)
+      studentId: req.session.userId,
+
+      thisStudent
+    });
+  } catch (err) {
+    console.error('GET /assignment/checkScore/:id error:', err);
+    if (!res.headersSent) {
+      return res.status(500).send('Server Error');
+    }
+  }
 });
 
-//student view profile and fee ====
 
+
+// student view profile and fee
 router.get('/all/computer/:id', async (req, res) => {
-    
-    if(req.session.studentIdentity) {
-    
-    await Student.findById(req.params.id, (err, doc) =>{
-       
-       if(!err) {
-        
-            return res.render('studentPage', {
-       
-            username: req.session.username,
-            
-            link1: req.session.myDashboard1,
-            
-            link2: req.session.myDashboard2,
-            
-            link3: req.session.myDashboard3,
-            
-            href1: req.session.hrefLink1,
-            
-            href2: req.session.hrefLink2,
-            
-            loginIdName: req.session.studentIdentity,
-            
-            studentId: req.session.userId,
-
-            students: doc
-                
-                });
- 
-            }
-            
-        })
-        
-        .populate('studentFee.verifierId')
-        
-        .populate('studentExamFee.verifierId')
-        
-        .populate('studentOtherFee.verifierId');
-        
-        return;
-        
+  try {
+    // must be a logged-in student (or you can allow admins too)
+    if (!req.session.studentIdentity) {
+      return res.redirect('/all/stdDashboard');
     }
 
-        res.redirect('/all/stdDashboard');
-    
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).render('studentPage', {
+        errors: 'Invalid student id.'
+      });
+    }
+
+    // Optional: enforce that a student can only view their own page (admins can view all)
+    if (String(req.session.userId) !== id && !req.session.adminIdentity) {
+      return res.status(403).redirect('/all/stdDashboard');
+    }
+
+    const student = await Student.findById(id)
+      .populate('studentFee.verifierId', 'username name')        // select only what you need
+      .populate('studentExamFee.verifierId', 'username name')
+      .populate('studentOtherFee.verifierId', 'username name');
+      // .lean(); // enable if your EJS doesn’t need Mongoose document methods
+
+    if (!student) {
+      return res.status(404).render('studentPage', { errors: 'Student not found.' });
+    }
+
+    return res.render('studentPage', {
+      username: req.session.username,
+      link1: req.session.myDashboard1,
+      link2: req.session.myDashboard2,
+      link3: req.session.myDashboard3,
+      href1: req.session.hrefLink1,
+      href2: req.session.hrefLink2,
+      href3: req.session.hrefLink3, // guard in the view if this may be undefined
+      loginIdName: req.session.studentIdentity,
+      studentId: req.session.userId,
+      students: student
+    });
+  } catch (err) {
+    console.error('GET /all/computer/:id failed:', err);
+    return res.status(500).render('studentPage', {
+      errors: 'Something went wrong. Please try again later.'
+    });
+  }
 });
+
+
 
 
 
@@ -993,7 +1270,7 @@ router.get('/all/dcatheorywelcomepage', async (req, res) => {
         
     }
         
-        res.redirect('/');
+       return res.redirect('/');
     
 });
 
@@ -1044,7 +1321,9 @@ router.get('/all/dcapracticalwelcomepage', async (req, res) => {
 
 //dca-101 intro page
 
-router.get('/all/dca101welcomepage', (req, res) => {
+router.get('/all/dca101welcomepage', async (req, res) => {
+  
+  const thisStudent = await Student.findOne({_id: req.session.userId});
     
     if(req.session.studentIdentity) {
         
@@ -1065,15 +1344,20 @@ router.get('/all/dca101welcomepage', (req, res) => {
             loginIdName: req.session.studentIdentity,
             
             studentId: req.session.userId,
+            
             studentFee: req.session.studentFee,
+            
             studentExamFee: req.session.studentExamFee,
-            studentOtherFee: req.session.studentOtherFee
+            
+            studentOtherFee: req.session.studentOtherFee,
+            
+            thisStudent
             
         });
         
     }
         
-        res.redirect('/');
+        return res.redirect('/');
     
 }); 
 
@@ -1412,7 +1696,7 @@ const thisStudent = await Student.findOne({_id: req.session.userId});
         
     }
         
-        res.redirect('/all/stdDashboard');
+        return res.redirect('/all/stdDashboard');
     
 });
 
@@ -6308,7 +6592,7 @@ if(req.session.adminIdentity) {
             } 
                
 
-        res.redirect('/stdList');
+        return res.redirect('/stdList');
     
 });
 
@@ -6589,77 +6873,47 @@ if(req.session.adminIdentity) {
     
 });
 
-//view fee by selecting date for admin only view
-
 router.get('/viewFee/viewFeeByDate/:dateSubmitted', async (req, res) => {
-    
-const currentDateWithoutTime = moment().format('YYYY-MM-DD'); //vawiin hriatna
-//req.params.dateSubmitted hian a chunga url date hi a search chhuak thei dawn a ni.
-            
-if(req.session.adminIdentity) {
-    
-  await Student.find({$or: [{studentFee : { $elemMatch: {  dateSubmitted : { $gte: req.params.dateSubmitted, $lte: currentDateWithoutTime }  } } }, 
-  
-  {studentExamFee : { $elemMatch: {  dateSubmitted : { $gte: req.params.dateSubmitted, $lte: currentDateWithoutTime }  } } },
-  
-  {studentOtherFee : { $elemMatch: {  dateSubmitted : { $gte: req.params.dateSubmitted, $lte: currentDateWithoutTime }  } } }
-  
-  ] },
-  
-  (err, doc) => {
-      
-console.log(req.params.dateSubmitted + 1);
-      if(!err) {
-          
-            res.render('viewFeeByDate', {
-                
-            viewTitle: 'Search From: ',
-       
-            username: req.session.username,
-            
-            link1: req.session.myDashboard1,
-            
-            link2: req.session.myDashboard2,
-            
-            link3: req.session.myDashboard3,
-            
-            href1: req.session.hrefLink1,
-            
-            href2: req.session.hrefLink2,
-            
-            students: doc,
-            
-            moment: moment,
-            
-            searchFromDate: req.params.dateofpayment
-                
-                });
-                
-                return;
-                
-                
+  if (!req.session.adminIdentity) return res.redirect('/stdList');
 
-            } else {
-                
-                res.redirect('/stdList');
-                
-            }
-            
-        })
-        .populate('studentFee.verifierId')
-        
-        .populate('studentExamFee.verifierId')
-        
-        .populate('studentOtherFee.verifierId');
-        
-        return;
-        
-            
-    }
-        
-        
-        res.redirect('/stdList');
-    
+  const startStr = req.params.dateSubmitted; // "YYYY-MM-DD"
+  const mStart = moment(startStr, 'YYYY-MM-DD', true);
+  if (!mStart.isValid()) return res.status(400).send('Invalid date. Use YYYY-MM-DD');
+
+  const start = mStart.startOf('day').toDate();
+  const end   = moment().endOf('day').toDate();
+
+  try {
+    const filter = {
+      $or: [
+        { studentFee:      { $elemMatch: { dateSubmitted: { $gte: start, $lte: end } } } },
+        { studentExamFee:  { $elemMatch: { dateSubmitted: { $gte: start, $lte: end } } } },
+        { studentOtherFee: { $elemMatch: { dateSubmitted: { $gte: start, $lte: end } } } }
+      ]
+    };
+
+    const students = await Student.find(filter)
+      .populate('studentFee.verifierId')
+      .populate('studentExamFee.verifierId')
+      .populate('studentOtherFee.verifierId')
+      .lean();
+
+    return res.render('viewFeeByDate', {
+      viewTitle: 'Search From:',
+      username: req.session.username,
+      link1: req.session.myDashboard1,
+      link2: req.session.myDashboard2,
+      link3: req.session.myDashboard3,
+      href1: req.session.hrefLink1,
+      href2: req.session.hrefLink2,
+      students,
+      moment,
+      searchFromDate: startStr
+    });
+  } catch (err) {
+    console.error('viewFeeByDate error:', err);
+    return res.status(500).send('Error fetching fees');
+  }
 });
 
 
@@ -6735,156 +6989,126 @@ if(req.session.adminIdentity) {
 
 
 
-
-//student page admin only view====
-
+// student page admin-only view
 router.get('/computer/:id', async (req, res) => {
-    
-    if(req.session.adminIdentity) {
-    
-    await Student.findById(req.params.id, (err, doc) =>{
-       
-       if(!err) {
-        
-            res.render('studentPage', {
-       
-            username: req.session.username,
-            
-            link1: req.session.myDashboard1,
-            
-            link2: req.session.myDashboard2,
-            
-            link3: req.session.myDashboard3,
-            
-            href1: req.session.hrefLink1,
-            
-            href2: req.session.hrefLink2,
-            
-            loginIdName: req.session.adminIdentity,
-           
-            students: doc
-                
-                });
-                
-                return;
-            }
-            
-        })
-        
-        .populate('studentFee.verifierId')
-        
-        .populate('studentExamFee.verifierId')
-        
-        .populate('studentOtherFee.verifierId');
-        
-        return;
-        
+  try {
+    // 1) Gate: non-admins are redirected immediately
+    if (!req.session.adminIdentity) {
+      return res.redirect('/stdList');
     }
 
-        res.redirect('/stdList')
-    
-})
+    // 2) Pure await (no callback) + populate chain
+    const student = await Student.findById(req.params.id)
+      .populate('studentFee.verifierId')
+      .populate('studentExamFee.verifierId')
+      .populate('studentOtherFee.verifierId')
+      .lean(); // optional: faster render if you don't need Mongoose docs
+
+    // 3) Not found path
+    if (!student) {
+      return res.status(404).render('404', { message: 'Student not found' });
+    }
+
+    // 4) Single render path
+    return res.render('studentPage', {
+      username: req.session.username,
+      link1: req.session.myDashboard1,
+      link2: req.session.myDashboard2,
+      link3: req.session.myDashboard3,
+      href1: req.session.hrefLink1,
+      href2: req.session.hrefLink2,
+      loginIdName: req.session.adminIdentity,
+      students: student
+    });
+  } catch (err) {
+    console.error('GET /computer/:id error:', err);
+    if (!res.headersSent) {
+      return res.status(500).send('Server Error');
+    }
+  }
+});
 
 
 
-
-//monthly fee payment form
-
+// monthly fee payment form
 router.get('/computer/:id/feeRegister', async (req, res) => {
-    
-  if(req.session.adminIdentity) {
-       
-       await Student.findById(req.params.id, (err, doc) =>{
-           
-    if(!err) {
-    
-        res.render('feeRegister', {
-                
-            viewTitle: 'Monthly fee statement',
-       
-            students: doc
-            
-                    });
+  // auth gate first
+  if (!req.session.adminIdentity) {
+    // use the real id, not the literal ":id"
+    return res.redirect(`/computer/${encodeURIComponent(req.params.id)}`);
+  }
 
-                }
+  try {
+    const student = await Student.findById(req.params.id); // no callback with await
 
-            });
-                
-        return;
-        
+    if (!student) {
+      req.flash('errors', ['Student not found']);
+      return res.redirect('/stdList');
     }
-            
-        res.redirect('/computer/:id');
-        
+
+    return res.render('feeRegister', {
+      viewTitle: 'Monthly fee statement',
+      students: student
+    });
+  } catch (err) {
+    console.error('GET /computer/:id/feeRegister error:', err);
+    return res.status(500).send('Server error');
+  }
 });
 
-// =========================================
 
-//exam fee payment form =========
-
+// exam fee payment form =========
 router.get('/computer/:id/examFeeRegister', async (req, res) => {
-    
-  if(req.session.adminIdentity) {
-       
-       await Student.findById(req.params.id, (err, doc) =>{
-           
-    if(!err) {
-    
-        res.render('examFeeRegister', {
-                
-            viewTitle: 'Exam fee statement',
-       
-            students: doc
-            
-                    });
+  if (!req.session.adminIdentity) {
+    return res.redirect(`/computer/${encodeURIComponent(req.params.id)}`);
+  }
 
-                }
-
-            });
-                
-        return;
-        
+  try {
+    const student = await Student.findById(req.params.id); // no callback with await
+    if (!student) {
+      req.flash('errors', ['Student not found']);
+      return res.redirect('/stdList');
     }
-            
-        res.redirect('/computer/:id');
-        
+
+    return res.render('examFeeRegister', {
+      viewTitle: 'Exam fee statement',
+      students: student
+    });
+  } catch (err) {
+    console.error('GET /computer/:id/examFeeRegister error:', err);
+    return res.status(500).send('Server error');
+  }
 });
-// =========================================
 
 
 
-
-
-
-//other fee like backlog any other payment form =====================
-
+// other fee like backlog / any other payment form =====================
 router.get('/computer/:id/otherFeeRegister', async (req, res) => {
-    
-  if(req.session.adminIdentity) {
-       
-       await Student.findById(req.params.id, (err, doc) =>{
-           
-    if(!err) {
-    
-        res.render('otherFeeRegister', {
-                
-            viewTitle: 'Other fee statement',
-       
-            students: doc
-            
-                    });
+  if (!req.session.adminIdentity) {
+    // use actual id, not "/computer/:id"
+    return res.redirect(`/computer/${encodeURIComponent(req.params.id)}`);
+  }
 
-                }
-
-            });
-                
-        return;
-        
+  try {
+    const student = await Student.findById(req.params.id); // no callback with await
+    if (!student) {
+      req.flash('errors', ['Student not found']);
+      return res.redirect('/stdList');
     }
-            
-        res.redirect('/computer/:id');
-        
+
+    return res.render('otherFeeRegister', {
+      viewTitle: 'Other fee statement',
+      students: student
+    });
+  } catch (err) {
+    console.error('GET /computer/:id/otherFeeRegister error:', err);
+    return res.status(500).send('Server error');
+  }
 });
+
+
+
+
 // =========================================
 
 router.get('/auth/logout', (req, res) => {
@@ -6901,151 +7125,196 @@ router.get('/auth/logout', (req, res) => {
 
 //===================================
 
-//delete assignment record
- 
+// delete assignment record
 router.get('/assignment/delete101/:id/:theoryId', async (req, res) => {
-    
+  try {
+    const { id, theoryId } = req.params;
 
-await Student.updateOne({_id: req.params.id}, { $pull: { assignmentTheory : { _id : req.params.theoryId } } }, { multi: true }, (err, doc) => {
-        
-        if (!err) {
-            
-            console.log('One 101 assignment data deleted successfully');
-            
-            res.redirect(req.get('referer'));
-            
-        }
-        
-        else { 
-            
-            console.log('Error in assignment delete :' + err);
-        
-            res.redirect(req.get('referer'));
-        }
-        
-    });
-    
+    // ✅ validate IDs
+    if (!mongoose.isValidObjectId(id) || !mongoose.isValidObjectId(theoryId)) {
+      console.warn('Invalid ObjectId for assignment delete:', id, theoryId);
+      return res.redirect(req.get('referer') || '/dcatheorywelcomepage');
+    }
+
+    // ✅ no callbacks, just await
+    const result = await Student.updateOne(
+      { _id: id },
+      { $pull: { assignmentTheory: { _id: theoryId } } }
+    );
+
+    if (result.modifiedCount > 0) {
+      console.log('Assignment data deleted successfully');
+    } else {
+      console.log('No assignment found for deletion');
+    }
+
+    // ✅ safe redirect
+    return res.redirect(req.get('referer'));
+  } catch (err) {
+    console.error('Error in assignment delete:', err);
+    return res.redirect(req.get('referer') || '/dcatheorywelcomepage');
+  }
 });
+
+
+
 
 
 router.get('/assignment/delete102/:id/:theoryId', async (req, res) => {
-    
+  try {
+    const { id, theoryId } = req.params;
 
-await Student.updateOne({_id: req.params.id}, { $pull: { assignmentTheory102 : { _id : req.params.theoryId } } }, { multi: true }, (err, doc) => {
-        
-        if (!err) {
-            
-            console.log('One 102  assignment data deleted successfully');
-            
-            res.redirect(req.get('referer'));
-            
-        }
-        
-        else { 
-            
-            console.log('Error in assignment delete :' + err);
-        
-            res.redirect(req.get('referer'));
-        }
-        
-    });
-    
+    // ✅ validate IDs
+    if (!mongoose.isValidObjectId(id) || !mongoose.isValidObjectId(theoryId)) {
+      console.warn('Invalid ObjectId for assignment delete:', id, theoryId);
+      return res.redirect(req.get('referer') || '/dcatheorywelcomepage');
+    }
+
+    // ✅ no callbacks, just await
+    const result = await Student.updateOne(
+      { _id: id },
+      { $pull: { assignmentTheory102: { _id: theoryId } } }
+    );
+
+    if (result.modifiedCount > 0) {
+      console.log('Assignment data deleted successfully');
+    } else {
+      console.log('No assignment found for deletion');
+    }
+
+    // ✅ safe redirect
+    return res.redirect(req.get('referer'));
+  } catch (err) {
+    console.error('Error in assignment delete:', err);
+    return res.redirect(req.get('referer') || '/dcatheorywelcomepage');
+  }
 });
+
 
 router.get('/assignment/delete103/:id/:theoryId', async (req, res) => {
-    
+  try {
+    const { id, theoryId } = req.params;
 
-await Student.updateOne({_id: req.params.id}, { $pull: { assignmentTheory103 : { _id : req.params.theoryId } } }, { multi: true }, (err, doc) => {
-        
-        if (!err) {
-            
-            console.log('One 103 assignment data deleted successfully');
-            
-            res.redirect(req.get('referer'));
-            
-        }
-        
-        else { 
-            
-            console.log('Error in assignment delete :' + err);
-        
-            res.redirect(req.get('referer'));
-        }
-        
-    });
-    
+    // ✅ validate IDs
+    if (!mongoose.isValidObjectId(id) || !mongoose.isValidObjectId(theoryId)) {
+      console.warn('Invalid ObjectId for assignment delete:', id, theoryId);
+      return res.redirect(req.get('referer') || '/dcatheorywelcomepage');
+    }
+
+    // ✅ no callbacks, just await
+    const result = await Student.updateOne(
+      { _id: id },
+      { $pull: { assignmentTheory103: { _id: theoryId } } }
+    );
+
+    if (result.modifiedCount > 0) {
+      console.log('Assignment data deleted successfully');
+    } else {
+      console.log('No assignment found for deletion');
+    }
+
+    // ✅ safe redirect
+    return res.redirect(req.get('referer'));
+  } catch (err) {
+    console.error('Error in assignment delete:', err);
+    return res.redirect(req.get('referer') || '/dcatheorywelcomepage');
+  }
 });
+
+
 
 router.get('/assignment/delete104/:id/:theoryId', async (req, res) => {
-    
+  try {
+    const { id, theoryId } = req.params;
 
-await Student.updateOne({_id: req.params.id}, { $pull: { assignmentTheory104 : { _id : req.params.theoryId } } }, { multi: true }, (err, doc) => {
-        
-        if (!err) {
-            
-            console.log('One 104 assignment data deleted successfully');
-            
-            res.redirect(req.get('referer'));
-            
-        }
-        
-        else { 
-            
-            console.log('Error in assignment delete :' + err);
-        
-            res.redirect(req.get('referer'));
-        }
-        
-    });
-    
+    // ✅ validate IDs
+    if (!mongoose.isValidObjectId(id) || !mongoose.isValidObjectId(theoryId)) {
+      console.warn('Invalid ObjectId for assignment delete:', id, theoryId);
+      return res.redirect(req.get('referer') || '/dcatheorywelcomepage');
+    }
+
+    // ✅ no callbacks, just await
+    const result = await Student.updateOne(
+      { _id: id },
+      { $pull: { assignmentTheory104: { _id: theoryId } } }
+    );
+
+    if (result.modifiedCount > 0) {
+      console.log('Assignment data deleted successfully');
+    } else {
+      console.log('No assignment found for deletion');
+    }
+
+    // ✅ safe redirect
+    return res.redirect(req.get('referer'));
+  } catch (err) {
+    console.error('Error in assignment delete:', err);
+    return res.redirect(req.get('referer') || '/dcatheorywelcomepage');
+  }
 });
+
+
 
 router.get('/assignment/delete105/:id/:theoryId', async (req, res) => {
-    
+  try {
+    const { id, theoryId } = req.params;
 
-await Student.updateOne({_id: req.params.id}, { $pull: { assignmentTheory105 : { _id : req.params.theoryId } } }, { multi: true }, (err, doc) => {
-        
-        if (!err) {
-            
-            console.log('One 105 assignment data deleted successfully');
-            
-            res.redirect(req.get('referer'));
-            
-        }
-        
-        else { 
-            
-            console.log('Error in assignment delete :' + err);
-        
-            res.redirect(req.get('referer'));
-        }
-        
-    });
-    
+    // ✅ validate IDs
+    if (!mongoose.isValidObjectId(id) || !mongoose.isValidObjectId(theoryId)) {
+      console.warn('Invalid ObjectId for assignment delete:', id, theoryId);
+      return res.redirect(req.get('referer') || '/dcatheorywelcomepage');
+    }
+
+    // ✅ no callbacks, just await
+    const result = await Student.updateOne(
+      { _id: id },
+      { $pull: { assignmentTheory105: { _id: theoryId } } }
+    );
+
+    if (result.modifiedCount > 0) {
+      console.log('Assignment data deleted successfully');
+    } else {
+      console.log('No assignment found for deletion');
+    }
+
+    // ✅ safe redirect
+    return res.redirect(req.get('referer'));
+  } catch (err) {
+    console.error('Error in assignment delete:', err);
+    return res.redirect(req.get('referer') || '/dcatheorywelcomepage');
+  }
 });
 
-router.get('/assignment/delete106/:id/:theoryId', async (req, res) => {
-    
 
-await Student.updateOne({_id: req.params.id}, { $pull: { assignmentTheory106 : { _id : req.params.theoryId } } }, { multi: true }, (err, doc) => {
-        
-        if (!err) {
-            
-            console.log('One 106 assignment data deleted successfully');
-            
-            res.redirect(req.get('referer'));
-            
-        }
-        
-        else { 
-            
-            console.log('Error in assignment delete :' + err);
-        
-            res.redirect(req.get('referer'));
-        }
-        
-    });
-    
+
+router.get('/assignment/delete106/:id/:theoryId', async (req, res) => {
+  try {
+    const { id, theoryId } = req.params;
+
+    // ✅ validate IDs
+    if (!mongoose.isValidObjectId(id) || !mongoose.isValidObjectId(theoryId)) {
+      console.warn('Invalid ObjectId for assignment delete:', id, theoryId);
+      return res.redirect(req.get('referer') || '/dcatheorywelcomepage');
+    }
+
+    // ✅ no callbacks, just await
+    const result = await Student.updateOne(
+      { _id: id },
+      { $pull: { assignmentTheory106: { _id: theoryId } } }
+    );
+
+    if (result.modifiedCount > 0) {
+      console.log('Assignment data deleted successfully');
+    } else {
+      console.log('No assignment found for deletion');
+    }
+
+    // ✅ safe redirect
+    return res.redirect(req.get('referer'));
+  } catch (err) {
+    console.error('Error in assignment delete:', err);
+    return res.redirect(req.get('referer') || '/dcatheorywelcomepage');
+  }
 });
 
 

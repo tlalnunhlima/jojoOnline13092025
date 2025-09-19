@@ -6,6 +6,8 @@
 
 <%- include('ejsFunction') -%>
 
+<%- include('flash') -%>
+
 <style>
 
 body {
@@ -49,25 +51,16 @@ body {
       
       <!--error a awm chuan form chungah a rawn tilang ang-->
             
-   <% if(errors != null && errors.length > 0 ) { %>
+
   
-      <ul class="list-group"></ul>
-      
-        <li class="list-group-item list-group-item-danger">
-          
-          <%= errors %>
-          
-        </li>
-    
-    </ul>
-    
-    <% } %>
-  
+
 
  <form action="/users/register" method="POST" autocomplete="off" class="border rounded bg-white shadow p-3">
+ 
+    <input type="hidden" name="_id" value="<%= students._id %>">
 
- <input type="hidden" name="_id" value="<%= students._id %>" aria-hidden="true">
-    
+
+
    <div class="row g-2">
      
      <div class="form-floating mb-2 col-lg-6">
@@ -127,6 +120,13 @@ body {
       <input type="text" class="form-control" id="floatingFname" placeholder="fname" name="fname" maxlength="30" value="<%= students.fname %>" required>
       
       <label for="floatingFname" class="fw-light"> Father's Name <span class="text-danger fw-bold"> *</span></label>
+      
+    </div>
+    <div class="form-floating mb-2 col-lg-6">
+      
+      <input type="text" class="form-control" id="floatingmName" placeholder="mName" name="mName" maxlength="30" value="<%= students.mName %>" required>
+      
+      <label for="floatingmName" class="fw-light"> Mother's Name <span class="text-danger fw-bold"> *</span></label>
       
     </div>
     

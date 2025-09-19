@@ -12,7 +12,9 @@ const staffSchema = new Schema({
         
        type: String,
        
-       required: [true, 'Please provide name']
+       required: [true, 'Please provide name'],
+       
+       unique: true
        
     },
     

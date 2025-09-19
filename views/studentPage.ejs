@@ -9,6 +9,8 @@
     <%- include('layouts/navbar') -%>
     
     <%- include ('ejsFunction') %> <!--function javascript ejs-->
+    <%- include('flash') %>
+
     
     <!-- --------------main container section------------------ -->
 
@@ -78,21 +80,39 @@
                       
                       <td><%= capitalizeFirstLetter(students.username) %></td>
                       
-                      <td class="text-primary" >F/Name</td>
-                      
-                      <td> : </td>
-                      
-                      <td><%= capitalizeFirstLetter(students.fname) %></td>
-                      
-                    </tr>
-                    
-                    <tr>
-                      
                       <td class="text-primary">Add </td>
                       
                       <td> : </td>
                       
                       <td><%= capitalizeFirstLetter(students.address) %></td>
+                      
+                      
+                      
+                    </tr>
+                    
+                    <tr>
+                      
+                     <td class="text-primary" >F/Name</td>
+                      
+                      <td> : </td>
+                      
+                      <td><%= capitalizeFirstLetter(students.fname) %></td>
+                      
+                      <td class="text-primary" >M/Name</td>
+                      
+                      <td> : </td>
+                      
+                      <td><%= capitalizeFirstLetter(students.mName) == undefined ? 'Nil' : students.mName %></td>
+                      
+                    </tr>
+                    
+                    <tr>
+                      
+                      <td class="text-primary">Regn </td>
+                      
+                      <td> : </td>
+                      
+                      <td> <%= students.regn %> </td>
                       
                       <td class="text-primary">Mob </td>
                       
@@ -104,53 +124,57 @@
                     
                     <tr>
                       
-                      <td class="text-primary">DoB</td>
+                       <td class="text-primary">DoB</td>
                       
                       <td> : </td>
                       
                       <td> <%= students.dob  %></td>
                       
-                      <td class="text-primary">Regn </td>
-                      
-                      <td> : </td>
-                      
-                      <td> <%= students.regn %> </td>
-                      
-                    </tr>
-                    
-                    <tr>
-                      
                       <td class="text-primary" > Email </td>
                       
                       <td> : </td>
                       
-                      <td> <%= students.emailId === undefined ? 'N/A' : students.emailId %></td>
+                      <td> <%= students.emailId == undefined ? 'Nil' : students.emailId %></td>
+                      
+                      
+                    </tr>
+                    
+                    <tr>
                       
                       <td class="text-primary" > Aadhar </td>
                       
                       <td> : </td>
                       
-                      <td><%= students.aadharNo === undefined  ? 'N/A' : giveSpace(students.aadharNo) %></td>
-                      
-                    </tr>
-                    
-                    <tr>
+                      <td><%= students.aadharNo == undefined  ? 'Nil' : giveSpace(students.aadharNo) %></td>
                       
                       <td class="text-primary" >Batch </td>
                       
                       <td> : </td>
                       
-                      <td> <%= students.batchSession === undefined ? 'N/A' : capitalizeFirstLetter(students.batchSession) %>
+                      <td> <%= students.batchSession == undefined ? ' ' : capitalizeFirstLetter(students.batchSession) %>
                       
-                      <%= students.admissionYear === undefined ? ' ' : students.admissionYear %>
+                      <%= students.admissionYear == undefined ? ' ' : students.admissionYear %>
                       
                       </td>
                       
-                      <td class="text-primary"> Online </td>
+                     
+                      
+                    </tr>
+                    
+                    <tr>
+                      
+                       <td class="text-primary"> Online </td>
                       
                       <td> : </td>
                       
                       <td> <%= students.datePosted === undefined  ? 'N/A' : convertDate(students.datePosted) %></td>
+                      
+                      <td class="text-primary" > Gender </td>
+                      
+                      <td> : </td>
+                      
+                      <td> <%= capitalizeFirstLetter(students.gender) %></td>
+                      
                       
                     </tr>
                     
@@ -204,29 +228,53 @@
                       </tr>
             
                     
-              <% for (var i=0; i < students.studentFee.length; i++) { %>
-              
-                        <tr>
-                          
-                          <td class="text-center border"><%=  i + 1 %><% if( username == 'tmapuia' || username == 'mary') { %>
-                          <a href="/studentFee/delete/<%= students._id %>/<%= students.studentFee[i]._id %>" onclick="return confirm('Are you sure to delete ' + '<%= students.studentFee[i].feeAmount %>' +' record ?');"><i class="fas fa-trash-alt border p-1 text-danger rounded float-end" aria-hidden="true"></i></a>
-                          <%  } %></td>
-                          
-                          <td class="border fst-italic"> <%= students.studentFee[i].narrationInput %> </td>
-                          
-                          <td class="border">Rs.  <%= students.studentFee[i].feeAmount %></td>
-                      
-                          <td class="border"><%= convertDate(students.studentFee[i].dateofpayment) %></td>
-                          
-                          <td class="border"><%= convertDate(students.studentFee[i].dateSubmitted) %></td>
-        
-                          <td class="border text-success">Rs. <%= showTotalAmount(students.studentFee[i].feeAmount)  %></td>
-                          
-                         
-                          
-                        </tr>
-                        
-                        <% } %>
+             <%
+  const fees = Array.isArray(students && students.studentFee) ? students.studentFee : [];
+  let runningTotal = 0;
+
+  function safeDate(d) {
+    try { return typeof convertDate === 'function' ? convertDate(d) : (d || '—'); }
+    catch (e) { return d || '—'; }
+  }
+%>
+
+<% for (let i = 0; i < fees.length; i++) { 
+     const fee = fees[i];
+     const feeId = fee && fee._id ? encodeURIComponent(fee._id) : '';
+     const studentId = students && students._id ? encodeURIComponent(students._id) : '';
+     const amount = Number(fee && fee.feeAmount) || 0;
+     runningTotal += amount;
+%>
+  <tr>
+    <td class="text-center border">
+      <%= i + 1 %>
+      <% if (username === 'tmapuia' || username === 'mary') { %>
+        <a
+          href="/studentFee/delete/<%= studentId %>/<%= feeId %>"
+          onclick="return confirm('Are you sure you want to delete the record of amount Rs. <%= String(amount).replace(/'/g, '\\&#39;') %>?');"
+        >
+          <i class="fas fa-trash-alt border p-1 text-danger rounded float-end" aria-hidden="true"></i>
+        </a>
+      <% } %>
+    </td>
+
+    <td class="border fst-italic"><%= fee && fee.narrationInput ? fee.narrationInput : '—' %></td>
+    <td class="border">Rs. <%= amount %></td>
+
+    <td class="border"><%= safeDate(fee && fee.dateofpayment) %></td>
+    <td class="border"><%= safeDate(fee && fee.dateSubmitted) %></td>
+
+    <td class="border text-success">
+      Rs. 
+      <% if (typeof showTotalAmount === 'function') { %>
+        <%= showTotalAmount(amount) %>
+      <% } else { %>
+        <%= runningTotal %>
+      <% } %>
+    </td>
+  </tr>
+<% } %>
+
                         
                         <% if (loginIdName == 'adminJojo') { %>
                             
@@ -301,26 +349,55 @@
                       </tr>
               
             
-            <% for (var i=0; i < students.studentExamFee.length; i++) { %>
-              
-                      
-              
-                        <tr>
-                          
-                          <td class="text-center border" ><%= i + 1 %><% if( username == 'tmapuia' || username == 'mary') { %>
-                          <a href="/studentExamFee/delete/<%= students._id %>/<%= students.studentExamFee[i]._id %>" onclick="return confirm('Are you sure to delete ' + '<%= students.studentExamFee[i].feeAmount %>' +' record ?');"><i class="fas fa-trash-alt border p-1 text-danger rounded float-end" aria-hidden="true"></i></a>
-                          <%  } %></td>
-                          <td class="border fst-italic"> <%= students.studentExamFee[i].narrationInput %> </td>
-                          <td class="border">Rs.  <%= students.studentExamFee[i].feeAmount %> 
-                          </td>
-                          <td class="border"><%= convertDate(students.studentExamFee[i].dateofpayment) %></td>
-                          <td class="border"><%= convertDate(students.studentExamFee[i].dateSubmitted) %></td>
-                          
-                          <td class="border text-success">Rs. <%= showTotalExamFeeAmount(students.studentExamFee[i].feeAmount)  %></td>
-                          
-                        </tr>
-                        
-                        <% } %>
+           <%
+  const examFees = Array.isArray(students && students.studentExamFee)
+    ? students.studentExamFee
+    : [];
+  let runningTotal1 = 0;
+
+  function safeDate(d) {
+    try { return typeof convertDate === 'function' ? convertDate(d) : (d || '—'); }
+    catch (e) { return d || '—'; }
+  }
+%>
+
+<% for (let i = 0; i < examFees.length; i++) { 
+     const fee = examFees[i];
+     const feeId = fee && fee._id ? encodeURIComponent(fee._id) : '';
+     const studentId = students && students._id ? encodeURIComponent(students._id) : '';
+     const amount = Number(fee && fee.feeAmount) || 0;
+     runningTotal1 += amount;
+%>
+  <tr>
+    <td class="text-center border">
+      <%= i + 1 %>
+      <% if (username === 'tmapuia' || username === 'mary') { %>
+        <a
+          href="/studentExamFee/delete/<%= studentId %>/<%= feeId %>"
+          onclick="return confirm('Are you sure you want to delete the record of amount Rs. <%= String(amount).replace(/'/g, '\\&#39;') %>?');"
+        >
+          <i class="fas fa-trash-alt border p-1 text-danger rounded float-end" aria-hidden="true"></i>
+        </a>
+      <% } %>
+    </td>
+
+    <td class="border fst-italic"><%= fee && fee.narrationInput ? fee.narrationInput : '—' %></td>
+    <td class="border">Rs. <%= amount %></td>
+
+    <td class="border"><%= safeDate(fee && fee.dateofpayment) %></td>
+    <td class="border"><%= safeDate(fee && fee.dateSubmitted) %></td>
+
+    <td class="border text-success">
+      Rs. 
+      <% if (typeof showTotalExamFeeAmount === 'function') { %>
+        <%= showTotalExamFeeAmount(amount) %>
+      <% } else { %>
+        <%= runningTotal1 %>
+      <% } %>
+    </td>
+  </tr>
+<% } %>
+
                         
                         
                         
@@ -395,25 +472,46 @@
           
               
             
-            <% for (var i=0; i < students.studentOtherFee.length; i++) { %>
-              
-                      
-              
-                        <tr>
-                          
-                          <td class="text-center border" ><%= i + 1 %><% if( username == 'tmapuia' || username == 'mary') { %>
-                          <a href="/studentOtherFee/delete/<%= students._id %>/<%= students.studentOtherFee[i]._id %>" onclick="return confirm('Are you sure to delete ' + '<%= students.studentOtherFee[i].feeAmount %>' +' record ?');"><i class="fas fa-trash-alt border p-1 text-danger rounded float-end" aria-hidden="true"></i></a>
-                          <%  } %></td>
-                          <td class="border fst-italic"> <%= students.studentOtherFee[i].narrationInput %> </td>
-                          <td class="border">Rs.  <%= students.studentOtherFee[i].feeAmount %> 
-                          </td>
-                          <td class="border"><%= convertDate(students.studentOtherFee[i].dateofpayment) %></td>
-                          <td class="border"><%= convertDate(students.studentOtherFee[i].dateSubmitted) %></td>
-                  
-                          <td class="border text-success"> <%= students.studentOtherFee[i].remarks %> </td>
-                        </tr>
-                        
-                        <% } %>
+            <%
+  const otherFees = Array.isArray(students && students.studentOtherFee)
+    ? students.studentOtherFee
+    : [];
+
+  function safeDate(d) {
+    try { return typeof convertDate === 'function' ? convertDate(d) : (d || '—'); }
+    catch (e) { return d || '—'; }
+  }
+%>
+
+<% for (let i = 0; i < otherFees.length; i++) {
+     const fee = otherFees[i] || {};
+     const studentId = students && students._id ? encodeURIComponent(students._id) : '';
+     const feeId = fee._id ? encodeURIComponent(fee._id) : '';
+     const amount = Number(fee.feeAmount) || 0;
+%>
+  <tr>
+    <td class="text-center border">
+      <%= i + 1 %>
+      <% if (username === 'tmapuia' || username === 'mary') { %>
+        <a
+          href="/studentOtherFee/delete/<%= studentId %>/<%= feeId %>"
+          onclick="return confirm('Are you sure you want to delete the record of amount Rs. <%= String(amount).replace(/'/g, '\\&#39;') %>?');"
+        >
+          <i class="fas fa-trash-alt border p-1 text-danger rounded float-end" aria-hidden="true"></i>
+        </a>
+      <% } %>
+    </td>
+
+    <td class="border fst-italic"><%= fee.narrationInput || '—' %></td>
+    <td class="border">Rs. <%= amount %></td>
+
+    <td class="border"><%= safeDate(fee.dateofpayment) %></td>
+    <td class="border"><%= safeDate(fee.dateSubmitted) %></td>
+
+    <td class="border text-success"><%= fee.remarks || '—' %></td>
+  </tr>
+<% } %>
+
                         
                         
                         <% if (loginIdName == 'adminJojo') { %>
@@ -462,5 +560,13 @@
     <%- include('layouts/footer') -%>
     
   </body>
+  <script>
+  setTimeout(() => {
+    document.querySelectorAll('.alert').forEach(a => {
+      if (a.classList.contains('show')) a.classList.remove('show');
+    });
+  }, 3000);
+</script>
+
 
 </html>

@@ -1,127 +1,130 @@
-const Student = require('../models/Student')
+// controllers/studentSave.js
+const Student = require('../models/Student');
+const { Types } = require('mongoose');
 
-module.exports = async (req, res) => {
-  
-   if (req.body._id == '') {
-     
-        insertRecord(req, res);
-        
-   } 
-   
-    else {
-            
-        updateRecord(req, res);
-        
-    }
-    
+// Only accept these fields from the form
+function pickStudentFields(body) {
+  return {
+    admissionYear : body.admissionYear,
+    regn          : body.regn,
+    username      : body.username,
+    fname         : body.fname,
+    mName         : body.mName,
+    address       : body.address,
+    phone         : body.phone,
+    dob           : body.dob,
+    emailId       : body.emailId,
+    aadharNo      : body.aadharNo,
+    batchSession  : body.batchSession,
+    gender        : body.gender,
+  };
 }
 
+module.exports = async (req, res) => {
+  const id = (req.body._id || '').trim();
 
+  if (id) {
+    return updateRecord(req, res, id);
+  }
+  return insertRecord(req, res);
+};
 
+async function insertRecord(req, res) {
+  try {
+    const data = pickStudentFields(req.body);
 
-function insertRecord(req, res) {
-   
-   const newStudent = new Student({
-       
-      admissionYear: req.body.admissionYear,
-      
-      regn: req.body.regn,
-      
+    const newStudent = new Student({
+      ...data,
       studentIdentity: 'computerStudent',
-      
-      username: req.body.username,
-      
-      fname: req.body.fname,
-      
-      address: req.body.address,
-      
-      phone: req.body.phone,
-      
-      dob: req.body.dob,
-      
-      emailId: req.body.emailId,
-      
-      aadharNo: req.body.aadharNo,
-      
-      batchSession: req.body.batchSession,
-      
-      gender: req.body.gender,
-      
       staffid: req.session.userId,
-      
       myDashboard: ['My Dashboard', 'My Scoreboard', 'Logout'],
-      
       hrefLink: ['/all/stdDashboard', '/all/stdScoreboard'],
-      
       studentFee: [],
-      
       studentExamFee: [],
-      
       assignmentTheory: [],
-      
       totalCourseFee: 9000,
-      
       feeDiscount: 2000,
-      
       feeAfterDiscount: 7000
-          
-   });
+    });
 
-  
+    await newStudent.save();
+    req.flash('success', 'Student created successfully.');
+    return res.redirect('/stdList');
 
-               newStudent.save()
-              
-                .then(() => {
-                    
-                    console.log('meow : student data submitted successfully');
-                    
-                    res.redirect('/stdList');
-                    
-                })
-                
-                .catch((error) => { 
-                
-                    const validationErrors = Object.keys(error.errors).map(key => error.errors[key].message);
-                    
-                    req.flash('validationErrors', validationErrors);
-                
-                
-                return res.render('register', {
-                    
-                    viewTitle: 'Register Student',
-                    
-                    errors: 'Registration Number hi a awm tawh!',
-                    
-                    students: req.body
-                    
-                    
-                    });
-                
-                });
+  } catch (error) {
+    const validationErrors = error?.errors
+      ? Object.keys(error.errors).map(k => error.errors[k].message)
+      : [];
 
-  
+    if (error?.code === 11000) {
+      // Duplicate key (likely regn)
+      req.flash('error', 'Registration Number hi a awm tawh!');
+      if (validationErrors.length) req.flash('validationErrors', validationErrors);
+      return res.render('register', {
+        viewTitle: 'Register Student',
+        errors: 'Registration Number hi a awm tawh!',
+        students: req.body
+      });
     }
 
+    console.error('Insert student error:', error);
+    if (validationErrors.length) req.flash('validationErrors', validationErrors);
 
-
-
-function updateRecord(req, res) {
-    
-   
-  Student.findOneAndUpdate({ _id: req.body._id}, req.body, { new: true }, (error, doc) => {
-       
-        if (doc) { res.redirect('/stdList')
-        
-         console.log('miau miau student details updated')
-         
-        } if(error) {
-            
-                res.redirect('/stdList')
-                
-                console.log('Error during student record update : ' + error);
-      
-        }
-        
+    return res.render('register', {
+      viewTitle: 'Register Student',
+      errors: validationErrors.length ? validationErrors : ['Could not save student. Please try again.'],
+      students: req.body
     });
-    
+  }
+}
+
+async function updateRecord(req, res, id) {
+  try {
+    if (!Types.ObjectId.isValid(id)) {
+      req.flash('error', 'Invalid student ID.');
+      return res.redirect('/stdList');
+    }
+
+    const updateData = pickStudentFields(req.body);
+    // If you never want studentIdentity changed on update, keep it out of updateData.
+
+    const updated = await Student.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    if (!updated) {
+      req.flash('warning', 'Student not found.');
+      return res.redirect('/stdList');
+    }
+
+    req.flash('success', 'Student details updated successfully.');
+    return res.redirect('/stdList');
+
+  } catch (error) {
+    const validationErrors = error?.errors
+      ? Object.keys(error.errors).map(k => error.errors[k].message)
+      : [];
+
+    if (error?.code === 11000) {
+      req.flash('error', 'Registration Number hi a awm tawh!');
+      if (validationErrors.length) req.flash('validationErrors', validationErrors);
+      // Send user back to edit page with their inputs
+      return res.render('register', {
+        viewTitle: 'Update student detail:',
+        errors: 'Registration Number hi a awm tawh!',
+        students: req.body
+      });
+    }
+
+    console.error('Update student error:', error);
+    if (validationErrors.length) req.flash('validationErrors', validationErrors);
+
+    return res.render('register', {
+      viewTitle: 'Update student detail:',
+      errors: validationErrors.length ? validationErrors : ['Could not update student. Please try again.'],
+      students: req.body
+    });
+  }
 }

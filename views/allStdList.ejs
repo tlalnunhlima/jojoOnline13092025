@@ -44,52 +44,61 @@
   </thead>
   
   <tbody>
-    
-      <% for(var i=0; i < students.length; i++) { %>
-      
-    <tr>
-      
-      <th class="text-center fw-normal" ><%= students[i].regn %></th>
-      
-      <td>
-        
-        <a href="/computer/<%= students[i]._id %>">
-          
-          <%= capitalizeFirstLetter(students[i].username) %>
-          
-        </a>
-        
-      </td>
-      
-      <td><%= capitalizeFirstLetter(students[i].fname) %></td>
-      
-      <td><%= capitalizeFirstLetter(students[i].address) %></td>
-      
-      <td><%= students[i].phone %></td>
-      
-      <td class="ps-3">  <a href="/assignment/checkScore/<%= students[i]._id %>" class="text-muted"> click here... </a></td>
-      
-      <td>
-        
-        <a href="/editStudent/<%= students[i]._id %>">
-          
-          <i class="fas fa-edit border border-muted p-1 text-muted rounded me-1" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit"></i>
-          
-        </a>
-    
-        <% if( username == 'tmapuia') { %>
-        
-        <a href="/stdList/delete/<%= students[i]._id %>" onclick="return confirm('Are you sure to delete ' + '<%= students[i].username %>' +' record ?');"><i class="fas fa-trash-alt border p-1 text-danger rounded" aria-hidden="true"></i></a>
-        
+  <% if (Array.isArray(students) && students.length) { %>
+    <% const currentYear = new Date().getFullYear(); %>
+    <% students.forEach(function(s) { %>
+      <tr>
+        <th class="text-center fw-normal"><%= s.regn || '-' %></th>
+
+        <td>
+          <a href="/computer/<%= s._id %>">
+            <%= s.username ? capitalizeFirstLetter(s.username) : 'Unnamed' %>
+          </a>
+          <% if (s.admissionYear) { %>
+            <span class="ms-2 badge <%= s.admissionYear === currentYear ? 'bg-success' : 'bg-secondary' %>">
+              <%= s.admissionYear === currentYear ? 'Current' : s.admissionYear %>
+            </span>
+          <% } %>
         </td>
-          
-         <% } %>
-      
+
+        <td><%= s.fname ? capitalizeFirstLetter(s.fname) : '-' %></td>
+        <td><%= s.address ? capitalizeFirstLetter(s.address) : '-' %></td>
+        <td><%= s.phone || '-' %></td>
+
+        <td class="ps-3">
+          <a href="/assignment/checkScore/<%= s._id %>" class="text-muted">click here...</a>
+        </td>
+
+        <td>
+          <a href="/editStudent/<%= s._id %>" aria-label="Edit <%= s.username || 'student' %>">
+            <i class="fas fa-edit border border-muted p-1 text-muted rounded me-1"
+               data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit"></i>
+          </a>
+
+          <% if (username === 'tmapuia') { %>
+            <a href="/stdList/delete/<%= s._id %>"
+               onclick="return confirm('Are you sure to delete <%= s.username || 'this' %> record?');"
+               aria-label="Delete <%= s.username || 'student' %>">
+              <i class="fas fa-trash-alt border p-1 text-danger rounded" aria-hidden="true"></i>
+            </a>
+          <% } %>
+        </td>
+      </tr>
+    <% }); %>
+  <% } else { %>
+    <tr>
+      <td colspan="7" class="text-center text-muted py-4">
+        No students found.
+        <% if (username === 'tmapuia') { %>
+          <div class="mt-2">
+            <a href="/register" class="btn btn-sm btn-outline-primary">Add Student</a>
+          </div>
+        <% } %>
+      </td>
     </tr>
-    
-    <% } %>
-    
-  </tbody>
+  <% } %>
+</tbody>
+
   
 </table>
 
@@ -102,5 +111,8 @@
     <%- include('layouts/footer') -%>
 
   </body>
+  
+ 
+
   
 </html>
