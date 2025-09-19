@@ -8,3 +8,5 @@ covid-19 second wave len lai a ni a, mizoram chhungah pawh nimin thleng khan mi 
 vawiin hi 02/07/2021 a ni a. covid avangin mi 95 an thi ta a. Nimin khan nikhum batch a miten online exam an nei a, hei hi mscte hnuaia online exam nei hmasa ber an ni.
 
 Vawiin hi ni 24/08/2021 a ni a. Covid avangin mi 200 an thi ta chiah a. Kan website siam pawh upload turin ka inbuatsaih mek a ni. Ka tum dan chuan github to codedeploy to codepipeline to ec2 tia upload ka tum deuh a ni. Engpawhnise, covid veite pawh lo dam zel rawh se.
+
+Zanin hi 19/09/2025 a ni a, Pathian hruaina ka dawng hle a; kum li hnuah kan website kan edit tha leh ta vek a. Tum dan chuan aws eb atangin deploy ka tum chhin dawn a ni.
