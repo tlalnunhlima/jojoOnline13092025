@@ -10,3 +10,5 @@ vawiin hi 02/07/2021 a ni a. covid avangin mi 95 an thi ta a. Nimin khan nikhum 
 Vawiin hi ni 24/08/2021 a ni a. Covid avangin mi 200 an thi ta chiah a. Kan website siam pawh upload turin ka inbuatsaih mek a ni. Ka tum dan chuan github to codedeploy to codepipeline to ec2 tia upload ka tum deuh a ni. Engpawhnise, covid veite pawh lo dam zel rawh se.
 
 Zanin hi 19/09/2025 a ni a, Pathian hruaina ka dawng hle a; kum li hnuah kan website kan edit tha leh ta vek a. Tum dan chuan aws eb atangin deploy ka tum chhin dawn a ni.
+
+Felfai takin nimin zing, ni 20/09/2025 inrinni tuk khan lighsail hmangin ka live thei ta a. tichuan kan website hming pawh jojocomputer.com ah kan thlak a, ssl certificate pawh ka titel nghal a. a felfai tawh viau a ni. Chawlhni zan 21/09/2025 hian loading spinner leh search button kan siam tel ta bawk a. Lightsail hmangin kan website chu update leh ka tum dawn a ni.
