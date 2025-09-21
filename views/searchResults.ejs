@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<link rel = "icon" type = "image/png" href = "/img/icon.png" />
+
+<%- include('layouts/headers') -%>
+
+<body>
+    
+    <%- include('layouts/navbar') -%>
+
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5>Search results for "<%= query %>"</h5>
+    <a href="/stdList" class="btn btn-primary btn-sm">← Back</a>
+  </div>
+
+  <% if (typeof error !== 'undefined') { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+
+  <% if (students.length > 0) { %>
+    <table class="table table-bordered table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>Regn</th>
+          <th>Name</th>
+          <th>Fother's Name</th>
+          <th>Address</th>
+          <th>Phone</th>
+          <th>Assignment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% students.forEach(function(s) { %>
+          <tr>
+            <td><%= s.regn %></td>
+            <td><a href="/computer/<%= s._id %>">
+          <%= s.username %></td>
+            <td><%= s.fname %></td>
+            <td><%= s.address %></td>
+            <td><%= s.phone %></td>
+            <td class="ps-3">
+          <a href="/assignment/checkScore/<%= s._id %>" class="text-muted">click here...</a>
+        </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } else { %>
+    <p class="text-muted">No results found.</p>
+  <% } %>
+</div>
+  <%- include('layouts/scripts') -%>
+    
+    <%- include('layouts/footer') -%>
+</body>
+</html

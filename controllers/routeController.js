@@ -308,13 +308,15 @@ router.get('/stdList', async (req, res) => {
             
             href1: req.session.hrefLink1,
             
-            href2: req.session.hrefLink2
+            href2: req.session.hrefLink2,
+            
+            
             
         })
         
         }
     
-    res.redirect('/');
+   return res.redirect('/');
 });
 
 
@@ -6571,7 +6573,7 @@ if(req.session.adminIdentity) {
     
     return res.render('viewFee', {
                 
-            viewTitle: 'All Fee Account',
+            viewTitle: 'Fee luh dan endikna',
        
             username: req.session.username,
             
@@ -6597,7 +6599,42 @@ if(req.session.adminIdentity) {
 });
 
 
+// Search results page
+router.get('/search', async (req, res) => {
+  const q = (req.query.q || '').trim();
 
+  try {
+    const students = await Student.find({
+      $or: [
+        { username: { $regex: q, $options: 'i' } },
+        { fname:    { $regex: q, $options: 'i' } },
+        { address:  { $regex: q, $options: 'i' } },
+        { phone:    { $regex: q, $options: 'i' } }
+      ]
+    }).sort({ regn: -1 });
+
+    res.render('searchResults', {
+      username: req.session.username,
+            
+            link1: req.session.myDashboard1,
+            
+            link2: req.session.myDashboard2,
+            
+            link3: req.session.myDashboard3,
+            
+            href1: req.session.hrefLink1,
+            
+            href2: req.session.hrefLink2,
+            
+            query: q,
+            
+            students
+    });
+  } catch (err) {
+    console.error(err);
+    res.render('searchResults', { query: q, students: [], error: 'Search failed' });
+  }
+});
 
 
 

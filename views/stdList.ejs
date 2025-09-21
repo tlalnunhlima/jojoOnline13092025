@@ -48,11 +48,29 @@
 
           </tbody>
           
+          
         </table>
-        
+
       </div>
       
 <%- include('layouts/studentBatchMenu') -%>
+
+<br>
+<div class="d-flex align-items-center justify-content-center" style="height: 10vh;">
+  <div class="text-center" style="max-width: 500px; width: 100%;">
+    <h4 class="mb-4">Zawnawlna</h4>
+    <form action="/search" method="GET" class="d-flex">
+      <input 
+        type="text" 
+        name="q" 
+        class="form-control me-2" 
+        placeholder="Hming, pa hming, veng/khua etc..." 
+        required
+      >
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+  </div>
+</div>
 
 </main>
     

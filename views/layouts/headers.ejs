@@ -1,3 +1,5 @@
+
+
 <head>
     <meta charset="utf-8">
     
@@ -8,11 +10,31 @@
     <title>Jojo Computer Institute </title>
 
     <!-- Bootstrap core CSS -->
-  
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" />
     
+
+<!-- Loader -->
+  <div id="loader">
+  <img src="/img/jojoSpinner.gif" alt="Loading..." />
+</div>
+
+<style>
+  #loader {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
 
 <!-- Custom styles for this template -->
 
@@ -23,5 +45,12 @@
 <link href="/css/style.css" rel="stylesheet" />
 
 <link rel = "icon" type = "image/png" href = "/img/icon.png" />
+
+<script>
+  window.addEventListener("load", function () {
+    document.getElementById("loader").style.display = "none";
+  });
+</script>
+
 
 </head>

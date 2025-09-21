@@ -465,6 +465,14 @@ UserSchema.index({ 'assignmentTheory104.dateSubmitted': 1 });
 UserSchema.index({ 'assignmentTheory105.dateSubmitted': 1 });
 UserSchema.index({ 'assignmentTheory106.dateSubmitted': 1 });
 
+//search awlsam nan aw:: Example: speed up regex and sort by regn
+UserSchema.index({ username: 1 });
+UserSchema.index({ fname: 1 });
+UserSchema.index({ address: 1 });
+UserSchema.index({ phone: 1 });
+UserSchema.index({ username: 'text', fname: 'text', address: 'text' });
+
+
 
 //duplicate checker
 UserSchema.plugin(uniqueValidator);
