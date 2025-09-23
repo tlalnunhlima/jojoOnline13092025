@@ -23,37 +23,31 @@
        <!-- --------------latest score------------------ -->
     <div class="row">
         
-        <%
-  // Admission year logic: current-year students need >=1670 (or exam == 1670),
-  // previous-year students need >=499 (or exam == 1670).
+         <%
+  // Example: you might have a flag to tell if this is the "current" student
+  // (e.g. from the database or session)
+  const isCurrentStudent = studentFee.some(f => f.dateofpayment >= "2024-12-31") ||
+  studentExamFee.some(f => f.dateofpayment >= "2024-12-31") ||
+  studentOtherFee.some(f => f.dateofpayment >= "2024-12-31" ) ; 
 
-  const nowYear = '2025';
-  const admYear = Number(thisStudent?.admissionYear);
+  let isPaid = false;
 
-  const feeArr    = Array.isArray(studentFee) ? studentFee : [];
-  const examArr   = Array.isArray(studentExamFee) ? studentExamFee : [];
-  const otherArr  = Array.isArray(studentOtherFee) ? studentOtherFee : [];
-
-  const any = (arr, pred) => arr.some(x => pred(Number(x?.feeAmount || 0)));
-
-  const examPaidEq1670 = any(examArr, n => n === 1670);
-
-  const currentYearPaid = (admYear === nowYear) && (
-    any(feeArr, n => n >= 1670) ||
-    any(otherArr, n => n >= 1670) ||
-    examPaidEq1670
-  );
-
-  const previousYearPaid = (admYear < nowYear) && (
-    any(feeArr, n => n >= 499) ||
-    any(otherArr, n => n >= 499) ||
-    examPaidEq1670
-  );
-
-  const isPaid = Boolean(currentYearPaid || previousYearPaid);
+  if (isCurrentStudent) {
+    // Current student rule: must pay full 1670
+    isPaid =
+      (Array.isArray(studentFee) && studentFee.some(f => f.feeAmount >= 1670)) ||
+      (Array.isArray(studentExamFee) && studentExamFee.some(f => f.feeAmount == 1670)) ||
+      (Array.isArray(studentOtherFee) && studentOtherFee.some(f => f.feeAmount >= 1670));
+  } else {
+    // Previous student rule: 499 or more is enough
+    isPaid =
+      (Array.isArray(studentFee) && studentFee.some(f => f.feeAmount >= 499)) ||
+      (Array.isArray(studentExamFee) && studentExamFee.some(f => f.feeAmount >= 499)) ||
+      (Array.isArray(studentOtherFee) && studentOtherFee.some(f => f.feeAmount >= 499));
+  }
 %>
 
-         <% if (isPaid) { %>
+                          <% if (isPaid) { %>
   <!-- carousel here (unchanged) -->
   <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
   <div class="carousel-indicators mt-0 pt-0">

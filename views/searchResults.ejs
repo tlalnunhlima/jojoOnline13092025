@@ -4,11 +4,10 @@
 <link rel = "icon" type = "image/png" href = "/img/icon.png" />
 
 <%- include('layouts/headers') -%>
-
+<%- include('layouts/navbar') -%>
 <body>
     
-    <%- include('layouts/navbar') -%>
-
+   
 <div class="container my-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h5>Search results for "<%= query %>"</h5>
@@ -20,6 +19,7 @@
   <% } %>
 
   <% if (students.length > 0) { %>
+  <div class="table-responsive">
     <table class="table table-bordered table-hover">
       <thead class="table-light">
         <tr>
@@ -46,12 +46,14 @@
           </tr>
         <% }) %>
       </tbody>
+      
     </table>
+    </div>
   <% } else { %>
     <p class="text-muted">No results found.</p>
   <% } %>
 </div>
-  <%- include('layouts/scripts') -%>
+    <%- include('layouts/scripts') -%>
     
     <%- include('layouts/footer') -%>
 </body>
