@@ -1,6 +1,9 @@
 <!doctype html>
 
 <html lang="en">
+    <head>
+    <link rel = "icon" type = "image/png" href = "/img/icon.png" />
+  </head>
   
 <%- include('layouts/headers') -%>
 
@@ -19,12 +22,61 @@
 
     <!-- --------------main container section------------------ -->
     <main class="container">
-      <!-- Button trigger modal -->
-       <div class="text-end">
-<button type="button" class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+
+<div class="text-end">
+<button type="button" class="btn btn-sm btn-outline-info m-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
   Website hman tangkai dan tur
 </button>
 </div>
+<!-- carousel here (unchanged) -->
+  <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
+  <div class="carousel-indicators mt-0 pt-0">
+    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active d-none d-sm-block" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" class="d-none d-sm-block" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" class="d-none d-sm-block" aria-label="Slide 3"></button>
+    <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="3" class="d-none d-sm-block" aria-label="Slide 4"></button>
+  </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active" data-bs-interval="10000">
+      <img src="/img/mainPageSlide1.jpg" class="d-block w-100" alt="...">
+      <div class="carousel-caption d-md-block text-primary">
+          <h5>Textbook Free Offered</h5>
+        <p>Kan zirlaite tan Textbook (Question bank) a lam theih tawh a, i la lam lo a nih chuan kan OA te lo hriattir ang che. </p>
+      </div>
+    </div>
+    <div class="carousel-item" data-bs-interval="10000">
+      <img src="/img/mainPageSlide2.jpg" class="d-block w-100" alt="...">
+      <div class="carousel-caption d-md-block text-white">
+        <h5>Kan Website hi</h5>
+        <p>Fee pek dan en nan te, assignment chhan nan te, practical zir nan te i lo hmang tangkai viau dawn nia.</p>
+      </div>
+    </div>
+    <div class="carousel-item" data-bs-interval="10000">
+      <img src="/img/mainPageSlide3.jpg" class="d-block w-100" alt="...">
+      <div class="carousel-caption d-md-block text-light">
+        <h5>Jojo Computer Institute hi</h5>
+        <p>Govt. Approved Institute a ni a; MSCTE affiliated Centre a ni bawk.</p>
+      </div>
+    </div>
+    <div class="carousel-item" data-bs-interval="10000">
+      <img src="/img/mainPageSlide4.jpg" class="d-block w-100" alt="...">
+      <div class="carousel-caption d-md-block text-white">
+        <h5>Kan Centre hi</h5>
+        <p>Aizawl, Lunglei leh Kolasib-ah te a awm a; zirlaiten mahni awmna azirin class an chhim kual vek thei.</p>
+      </div>
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+
+
  <div class="mission-header mt-4 p-3 pb-md-4 mx-auto text-center">
     <h1 class="display-6 fw-normal pb-2 text-muted">Website Objective</h1>
     <p class="fs-5 text-muted objective">Khawiah pawh, internet signal awmna apiangah mi'n computer a zir theihna tur leh phone atang pawha thiam taka a lo inzir theihna tura duan a ni.</p>
